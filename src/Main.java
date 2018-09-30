@@ -4,6 +4,5 @@ public class Main {
         System.out.println("Hello World!");
 
         System.out.println("Abigail did this.");
-        // checking how git works on intellij
     }
 }
