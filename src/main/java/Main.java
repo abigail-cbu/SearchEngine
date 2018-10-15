@@ -57,8 +57,10 @@ public class Main {
         pw.close();
         */
 
-        SearchEngineRepository ser = new SearchEngineRepository();
-        ser.InsertLink(CBU.getLinkNames().get(1), CBU.getLinks().get(1), 0);
+        for (int i = 0; i < CBU.getLinkCount(); i++) {
+            SearchEngineRepository ser = new SearchEngineRepository();
+            ser.InsertLink(CBU.getLinkNames().get(i + 1), CBU.getLinks().get(i + 1), 0);
+        }
 
     }
 }
