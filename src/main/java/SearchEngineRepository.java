@@ -2,9 +2,9 @@ import java.sql.*;
 
 public class SearchEngineRepository {
 
-    public String _myDrive = "com.mysql.jdbc.Driver";
-    ;
-    public String _myUrl = "jdbc:mysql://localhost:3306/SearchEngineDB";
+    private String _myDrive = "com.mysql.jdbc.Driver";
+
+    private String _myUrl = "jdbc:mysql://localhost:3306/SearchEngineDB";
 
     public void InsertLink(String linkText, String url, int prevLinkID) {
         try {
