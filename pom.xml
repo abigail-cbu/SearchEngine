@@ -50,8 +50,11 @@
             <version>7.0.0.jre10</version>
         </dependency>
 
+        <dependency>
+            <!-- jsoup HTML parser library @ http://jsoup.org/ -->
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.9.2</version>
+        </dependency>
     </dependencies>
-
-
-
 </project>
