@@ -1,3 +1,5 @@
+package Classes;
+
 import org.jsoup.nodes.Element;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +11,7 @@ public class Website {
     private Map<Integer,String> links;
     private Map<Integer,String> linkNames;
     private int LinkCount;
+    private String bodyText;
 
     public Website(String pSiteName, String pUrl){
         this.siteName = pSiteName;
@@ -52,5 +55,13 @@ public class Website {
     }
     public void linkCountPlusOne(){
         this.LinkCount++;
+    }
+
+    public String getBodyText() {
+        return this.bodyText;
+    }
+
+    public void setBodyText(String bodyText) {
+        this.bodyText = bodyText;
     }
 }
