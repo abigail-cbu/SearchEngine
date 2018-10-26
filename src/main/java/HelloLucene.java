@@ -32,8 +32,18 @@ public class HelloLucene {
         IndexWriter w = new IndexWriter(index, config);
         addDoc(w, "Lucene in Action", "193398817");
         addDoc(w, "Lucene for Dummies", "55320055Z");
-        addDoc(w, "Managing Gigabytes", "55063554A");
+        addDoc(w, "Lucene Gigabytes", "55063554A");
         addDoc(w, "The Art of Computer Science", "9900333X");
+        addDoc(w, "The Art of Lucene Science", "9900333A");
+        addDoc(w, "Lucene Animal", "55063554B");
+        addDoc(w, "Lucene Bear", "55063554C");
+        addDoc(w, "Lucene Cat", "55063554D");
+        addDoc(w, "Lucene Dog", "55063554E");
+        addDoc(w, "Lucene Elephant", "55063554F");
+        addDoc(w, "Lucene Fish", "55063554G");
+        addDoc(w, "Lucene Goat", "55063554H");
+        addDoc(w, "Lucene Horse", "55063554I");
+        addDoc(w, "Lucene Ice Cream", "55063554J");
         w.close();
 
         // 2. query
