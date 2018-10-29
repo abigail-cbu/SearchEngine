@@ -88,6 +88,7 @@ public class Crawling implements Runnable {
     public Website nextCrawl()
     {
         return page;
+
     }
 
 }
