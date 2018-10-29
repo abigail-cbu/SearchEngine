@@ -116,6 +116,7 @@ public class Main {
                 websiteList.add(new Website(crawlingThread2.nextCrawl().getLinkNames().get(i+1),crawlingThread2.nextCrawl().getLinks().get(i+1)));
             }
 
+
         }
         for(Website w:websiteList)
             sitesToCrawl.add(w);
