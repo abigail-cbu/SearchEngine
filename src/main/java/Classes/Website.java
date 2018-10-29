@@ -12,6 +12,7 @@ public class Website {
     private Map<Integer,String> linkNames;
     private int LinkCount;
     private String bodyText;
+    private boolean isCrawled;
 
     public Website(String pSiteName, String pUrl){
         this.siteName = pSiteName;
@@ -19,6 +20,7 @@ public class Website {
         links = new HashMap<Integer, String>();
         linkNames = new HashMap<Integer, String>();
         LinkCount = 0;
+        isCrawled=false;
     }
 
     public int getLinkCount() {
@@ -63,5 +65,11 @@ public class Website {
 
     public void setBodyText(String bodyText) {
         this.bodyText = bodyText;
+    }
+    public void isCrawled(){
+        this.isCrawled = true;
+    }
+    public boolean getIsCrawled (){
+        return this.isCrawled;
     }
 }

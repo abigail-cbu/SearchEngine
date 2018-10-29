@@ -63,6 +63,7 @@ public class Crawling implements Runnable {
 
             }
             page.setBodyText(doc.body().text());
+            page.isCrawled();
           /*  String[] splited = doc.body().text().split(" ");
             for(String s:splited)
                 System.out.println(s);*/
