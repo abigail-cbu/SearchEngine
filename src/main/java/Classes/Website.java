@@ -8,19 +8,23 @@ import java.util.Map;
 public class Website {
     private String siteName;
     private String url;
-    private Map<Integer,String> links;
-    private Map<Integer,String> linkNames;
+   // private Map<Integer,String> links;
+   // private Map<Integer,String> linkNames;
     private int LinkCount;
     private String bodyText;
     private boolean isCrawled;
+    private int depth;
+    ArrayList<Website> innerWebsites;
 
-    public Website(String pSiteName, String pUrl){
+    public Website(String pSiteName, String pUrl, int pDepth){
         this.siteName = pSiteName;
         this.url = pUrl;
-        links = new HashMap<Integer, String>();
-        linkNames = new HashMap<Integer, String>();
+       // links = new HashMap<Integer, String>();
+     //   linkNames = new HashMap<Integer, String>();
         LinkCount = 0;
         isCrawled=false;
+        depth = pDepth;
+        innerWebsites = new ArrayList<Website>();
     }
 
     public int getLinkCount() {
@@ -34,24 +38,24 @@ public class Website {
         return url;
     }
 
-    public Map<Integer,String> getLinks() {
+   /* public Map<Integer,String> getLinks() {
         return links;
-    }
-    public Map<Integer,String> getLinkNames() {
+    }*/
+   /* public Map<Integer,String> getLinkNames() {
         return linkNames;
     }
-
+*/
     public void setSiteName(String siteName) {
         this.siteName = siteName;
     }
 
-    public void setLinks(Integer pKey, String pValue) {
+  /*  public void setLinks(Integer pKey, String pValue) {
         this.links.put(pKey,pValue);
     }
     public void setLinkNames(Integer pKey, String pValue) {
         this.linkNames.put(pKey,pValue);
     }
-
+*/
     public void setUrl(String url) {
         this.url = url;
     }
@@ -71,5 +75,17 @@ public class Website {
     }
     public boolean getIsCrawled (){
         return this.isCrawled;
+    }
+    public void depthPlusOne (){
+        this.depth++;
+    }
+    public int getDepth(){
+        return this.depth;
+    }
+    public void addToInnerWebsites (Website pWebsite){
+        this.innerWebsites.add(pWebsite);
+    }
+    public ArrayList<Website> getInnerWebsites(){
+        return this.innerWebsites;
     }
 }
