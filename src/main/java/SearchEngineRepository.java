@@ -14,7 +14,7 @@ public class SearchEngineRepository {
 
     public static final Logger logger = LogManager.getLogger(SearchEngineRepository.class);
 
-    public void InsertLink(String linkText, String url, int prevLinkID) {
+    public void InsertLink(String linkText, String url, int prevLinkID, int depth) {
         try {
             Class.forName(_myDrive);
 
@@ -22,14 +22,17 @@ public class SearchEngineRepository {
             logger.info("Connected to SearchEngineDB");
 
             //the mysql insert statement
-            String query = "INSERT INTO LINKS (LinkText, URL, PrevLinkID)"
-                    + "VALUES (?, ?, ?)";
+            String query = "INSERT INTO LINKS (LinkText, URL, PrevLinkID, Crawled, Depth)"
+                    + "VALUES (?, ?, ?, ?, ?)";
 
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query);
             preparedStmt.setString(1, linkText);
             preparedStmt.setString(2, url);
             preparedStmt.setInt(3, prevLinkID);
+            preparedStmt.setBoolean(4, false); // should be first time inserting link
+            preparedStmt.setInt(5, depth);
+
 
             // execute the preparedstatement
             preparedStmt.execute();

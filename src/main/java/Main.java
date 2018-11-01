@@ -59,7 +59,7 @@ public class Main {
 
         for (int i = 0; i < CBU.getLinkCount(); i++) {
             SearchEngineRepository ser = new SearchEngineRepository();
-            ser.InsertLink(CBU.getLinkNames().get(i + 1), CBU.getLinks().get(i + 1), 0);
+            ser.InsertLink(CBU.getLinkNames().get(i + 1), CBU.getLinks().get(i + 1), 0, 0);
         }
 
     }
