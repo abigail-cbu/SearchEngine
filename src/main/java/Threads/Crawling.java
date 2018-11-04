@@ -44,37 +44,23 @@ public class Crawling implements Runnable {
             {
                 Website w;
                 page.linkCountPlusOne();
-              //  page.setLinkNames(page.getLinkCount(),l.text());
                 if(l.attr("href").startsWith("/")){
                     temp = l.attr("href");
                     temp = page.getUrl()+temp.substring(1);
-                 //   page.setLinks(page.getLinkCount(),temp);
                     w= new Website(l.text(),temp,page.getDepth()+1);
                 }
                 else
                     w= new Website(l.text(),l.attr("href"),page.getDepth()+1);
-                   // page.setLinks(page.getLinkCount(),l.attr("href"));
                 page.addToInnerWebsites(w);
                 if(!Main.urlStrings.contains(w.getUrl())) {
                     Main.urlStrings.add(w.getUrl());
                     Main.sitesToCrawl.add(w);
                    // logger.info("   name:"+w.getSiteName()+"   URL"+w.getUrl()+"   depth:"+w.getDepth()+"  isCrawled:"+w.getIsCrawled());
                 }
-                else{
-                    //logger.info("ghjghjgjh");
-                }
 
 
             }
-           /* Elements links = doc.select("a[href]"); // a with href
-            Elements pngs = doc.select("img[src$=.png]");
-            // img with src ending .png
-            int counter =1;
-            Element masthead = doc.select("div.masthead").first();*/
             for(int i = 0;i<page.getLinkCount();i++){
-
-                //System.out.println(page.getLinkNames().get(i)+":      "+page.getLinks().get(i));
-
                 sb.append(i+1);
                 sb.append(',');
               //  sb.append(page.getLinkNames().get(i+1));
@@ -86,9 +72,6 @@ public class Crawling implements Runnable {
             page.setBodyText(doc.body().text());
             page.isCrawled();
 
-          /*  String[] splited = doc.body().text().split(" ");
-            for(String s:splited)
-                System.out.println(s);*/
         }catch (Exception e){
             
         }

@@ -23,11 +23,8 @@ public class Main {
     public static List<String> urlStrings = new ArrayList<String>();
     public static void main(String[] args) throws Exception {
 
-        List<Crawling> crawlerList = new ArrayList<Crawling>();
         List<Thread> threadList = new ArrayList<Thread>();
 
-
-        int numberOfThread = 1;
         Website seedSite = new Website("CalBaptist","https://calbaptist.edu/",0);
         sitesToCrawl.add(seedSite);
         while (!sitesToCrawl.isEmpty()){

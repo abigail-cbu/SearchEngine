@@ -8,8 +8,6 @@ import java.util.Map;
 public class Website {
     private String siteName;
     private String url;
-   // private Map<Integer,String> links;
-   // private Map<Integer,String> linkNames;
     private int LinkCount;
     private String bodyText;
     private boolean isCrawled;
@@ -19,8 +17,6 @@ public class Website {
     public Website(String pSiteName, String pUrl, int pDepth){
         this.siteName = pSiteName;
         this.url = pUrl;
-       // links = new HashMap<Integer, String>();
-     //   linkNames = new HashMap<Integer, String>();
         LinkCount = 0;
         isCrawled=false;
         depth = pDepth;
@@ -38,24 +34,10 @@ public class Website {
         return url;
     }
 
-   /* public Map<Integer,String> getLinks() {
-        return links;
-    }*/
-   /* public Map<Integer,String> getLinkNames() {
-        return linkNames;
-    }
-*/
     public void setSiteName(String siteName) {
         this.siteName = siteName;
     }
 
-  /*  public void setLinks(Integer pKey, String pValue) {
-        this.links.put(pKey,pValue);
-    }
-    public void setLinkNames(Integer pKey, String pValue) {
-        this.linkNames.put(pKey,pValue);
-    }
-*/
     public void setUrl(String url) {
         this.url = url;
     }
