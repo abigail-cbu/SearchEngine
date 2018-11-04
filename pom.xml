@@ -75,5 +75,19 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.12</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/jboss/jboss-j2ee -->
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-j2ee</artifactId>
+            <version>4.2.2.GA</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/info.cukes/cucumber-core -->
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-core</artifactId>
+            <version>1.2.5</version>
+        </dependency>
+
     </dependencies>
 </project>

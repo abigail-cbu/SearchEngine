@@ -7,18 +7,18 @@ import java.sql.*;
 
 public class SearchEngineRepository {
 
-    private String _myDrive = "com.mysql.jdbc.Driver";
+    private String _myDrive = "com.mysql.jdbc.Driver";  //insert this
 
-    // MySQL: "jdbc:mysql://hostname:port/databaseName", "username", "password"
-    private String _myUrl = "jdbc:mysql://localhost:3306/SearchEngineDB?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+    // MySQL: "jdbc:mysql://hostname:port/databaseName", "username", "password" //insert this
+    private String _myUrl = "jdbc:mysql://localhost:3306/SearchEngineDB?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"; //insert this
 
     public static final Logger logger = LogManager.getLogger(SearchEngineRepository.class);
 
     public void InsertLink(String linkText, String url, int prevLinkID) {
         try {
-            Class.forName(_myDrive);
+            Class.forName(_myDrive); //insert this
 
-            Connection _globalConnectionString = DriverManager.getConnection(_myUrl, "root", "");
+            Connection _globalConnectionString = DriverManager.getConnection(_myUrl, "root", ""); //insert this
             logger.info("Connected to SearchEngineDB");
 
             //the mysql insert statement
@@ -26,7 +26,7 @@ public class SearchEngineRepository {
                     + "VALUES (?, ?, ?)";
 
             // create the mysql insert and add parameters
-            PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query);
+            PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query); //prob use get/read
             preparedStmt.setString(1, linkText);
             preparedStmt.setString(2, url);
             preparedStmt.setInt(3, prevLinkID);
