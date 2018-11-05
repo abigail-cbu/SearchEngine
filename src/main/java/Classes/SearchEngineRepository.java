@@ -21,7 +21,7 @@ public class SearchEngineRepository {
             Class.forName(_myDrive);
 
             Connection _globalConnectionString = DriverManager.getConnection(_myUrl, "root", "");
-            logger.info("Connected to SearchEngineDB");
+            logger.info("InsertWebsite");
 
             //the mysql insert statement
             String query = "INSERT INTO Websites (SiteName, URL, Crawled, Depth)"
@@ -140,7 +140,7 @@ public class SearchEngineRepository {
             Class.forName(_myDrive);
 
             Connection _globalConnectionString = DriverManager.getConnection(_myUrl, "root", "");
-            logger.info("Connected to SearchEngineDB");
+            logger.info("InsertSourceCode");
 
             //the mysql insert statement
             String query = "UPDATE SourceCodes" +
@@ -174,11 +174,10 @@ public class SearchEngineRepository {
             Class.forName(_myDrive);
 
             Connection _globalConnectionString = DriverManager.getConnection(_myUrl, "root", "");
-            logger.info("Connected to SearchEngineDB");
 
             //the mysql insert statement
-            String query = "SELECT URL "
-                    + "FROM Websites " +
+            String query = "SELECT URL"
+                    + " FROM Websites " +
                     "WHERE URL = ?";
 
             // create the mysql insert and add parameters

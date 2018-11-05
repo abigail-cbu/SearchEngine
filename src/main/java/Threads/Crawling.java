@@ -36,7 +36,7 @@ public class Crawling implements Runnable {
     }
 
     public void run() {
-        if (page.getDepth() > 1) {
+        if (page.getDepth() > 0) {
             return;
         }
 
@@ -46,6 +46,7 @@ public class Crawling implements Runnable {
             String elementUrl; // for urls that are pointing to home page (i.e. /apply == calbaptist.edu/apply)
             SearchEngineRepository ser = new SearchEngineRepository();
 
+            logger.info("Searching through page for links: " + page.getUrl());
             for (Element l : doc.select("a[href]")) {
                 Website w;
                 page.linkCountPlusOne();

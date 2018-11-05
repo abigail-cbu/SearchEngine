@@ -30,6 +30,13 @@ public class Main {
 
         Website seedSite = new Website("CalBaptist", "https://calbaptist.edu/", 0);
         sitesToCrawl.add(seedSite);
+
+        SearchEngineRepository ser = new SearchEngineRepository();
+        if (!ser.WebsiteExists(seedSite.getUrl())) {
+            ser.InsertWebsite(seedSite.getSiteName(), seedSite.getUrl(), 0);
+        }
+
+        logger.info("Starting WebCrawler");
         while (!sitesToCrawl.isEmpty()) {
             threadList.clear();
             Website w = sitesToCrawl.poll();
@@ -37,6 +44,7 @@ public class Main {
             Thread thread = new Thread(crawlingThread);
             threadList.add(thread);
             if (sitesToCrawl.size() > 100) {
+                logger.info("Creating more threads");
                 Website[] ww = new Website[100];
                 Crawling[] cc = new Crawling[100];
                 for (int ii = 0; ii < 100; ii++) {
@@ -52,16 +60,19 @@ public class Main {
                 t.start();
 
             try {
+                logger.info("Joining Threads");
                 //main thread waits for the other threads to finish
                 for (Thread t : threadList)
                     t.join();
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                logger.error(e.getMessage());
             }
+
             logger.info("sites to crawl" + sitesToCrawl.size() + "    tread ID:" + threadID + "   depth:" + w.getDepth() + "  isCrawled:" + w.getIsCrawled() + "  name" + w.getSiteName() + "  URL " + w.getUrl());
         }
 
+        logger.info("Finished WebCrawler");
     }
-
 }
