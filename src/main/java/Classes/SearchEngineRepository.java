@@ -9,14 +9,14 @@ import java.util.ArrayList;
 
 public class SearchEngineRepository {
 
-    private String _myDrive = "com.mysql.jdbc.Driver";
+    private String _myDrive = "com.mysql.cj.jdbc.Driver";
 
     // MySQL: "jdbc:mysql://hostname:port/databaseName", "username", "password"
-    private String _myUrl = "jdbc:mysql://localhost:3306/SearchEngineDB?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+    private String _myUrl = "jdbc:mysql://localhost/SearchEngineDB";
 
     public static final Logger logger = LogManager.getLogger(SearchEngineRepository.class);
 
-    public void InsertWebsite(String linkText, String url, int depth) {
+    public void InsertWebsite(String siteName, String url, int depth) {
         try {
             Class.forName(_myDrive);
 
@@ -24,12 +24,12 @@ public class SearchEngineRepository {
             logger.info("Connected to SearchEngineDB");
 
             //the mysql insert statement
-            String query = "INSERT INTO Websites (LinkText, URL, Crawled, Depth)"
+            String query = "INSERT INTO Websites (SiteName, URL, Crawled, Depth)"
                     + "VALUES (?, ?, ?, ?)";
 
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query);
-            preparedStmt.setString(1, linkText);
+            preparedStmt.setString(1, siteName);
             preparedStmt.setString(2, url);
             preparedStmt.setBoolean(3, false); // should be first time inserting link
             preparedStmt.setInt(4, depth);
@@ -55,7 +55,7 @@ public class SearchEngineRepository {
 
             //the mysql insert statement
             String query = "UPDATE Websites"
-                    + "SET Crawled = TRUE" +
+                    + " SET Crawled = TRUE" +
                     "   WHERE URL = ?";
 
             // create the mysql insert and add parameters
@@ -83,8 +83,8 @@ public class SearchEngineRepository {
 
             //the mysql insert statement
             String query = "SELECT Crawled"
-                    + "FROM Websites" +
-                    "WHERE URL = ?";
+                    + " FROM Websites" +
+                    " WHERE URL = ?";
 
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query);
@@ -116,7 +116,7 @@ public class SearchEngineRepository {
 
             //the mysql insert statement
             String query = "UPDATE Websites"
-                    + "SET Crawled = TRUE" +
+                    + " SET Crawled = TRUE" +
                     " WHERE URL= ?";
 
             // create the mysql insert and add parameters
@@ -144,8 +144,8 @@ public class SearchEngineRepository {
 
             //the mysql insert statement
             String query = "UPDATE SourceCodes" +
-                    "SET SourceCode = ?" +
-                    "WHERE LinkID = " +
+                    " SET SourceCode = ?" +
+                    " WHERE LinkID = " +
                     "(" +
                     "   SELECT LinkID" +
                     "   FROM Websites" +
@@ -177,8 +177,8 @@ public class SearchEngineRepository {
             logger.info("Connected to SearchEngineDB");
 
             //the mysql insert statement
-            String query = "SELECT URL"
-                    + "FROM Websites" +
+            String query = "SELECT URL "
+                    + "FROM Websites " +
                     "WHERE URL = ?";
 
             // create the mysql insert and add parameters

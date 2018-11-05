@@ -36,7 +36,7 @@ public class Crawling implements Runnable {
     }
 
     public void run() {
-        if (page.getDepth() > 0) {
+        if (page.getDepth() > 1) {
             return;
         }
 
@@ -55,7 +55,6 @@ public class Crawling implements Runnable {
                     elementUrl = l.attr("href");
                     elementUrl = page.getUrl() + elementUrl.substring(1);
                     w = new Website(l.text(), elementUrl, newDepth);
-
                 } else {
                     w = new Website(l.text(), l.attr("href"), newDepth);
                 }
@@ -71,14 +70,21 @@ public class Crawling implements Runnable {
 
                 // only save unique websites
                 if (!ser.WebsiteExists(w.getUrl())) {
+                    logger.info("Insert Website: " + w.getUrl());
                     ser.InsertWebsite(w.getSiteName(), w.getUrl(), w.getDepth());
                     Main.sitesToCrawl.add(w);
                 }
+                else
+                {
+                    logger.info("Website Exists: " + w.getUrl());
+                }
             }
 
+            logger.info("Set Source Code for Website " + page.getUrl());
             page.setSourceCode(doc.body().text());
             ser.InsertSourceCode(page.getUrl(), doc.body().text());
 
+            logger.info("Set Crawled for Website " + page.getUrl());
             page.isCrawled();
             ser.SetCrawled(page.getUrl());
 
