@@ -1,10 +1,11 @@
-
+package Classes;
 
 import com.mysql.cj.protocol.Resultset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class SearchEngineRepository {
 
@@ -15,7 +16,7 @@ public class SearchEngineRepository {
 
     public static final Logger logger = LogManager.getLogger(SearchEngineRepository.class);
 
-    public void InsertLink(String linkText, String url, int prevLinkID, int depth) {
+    public void InsertWebsite(String linkText, String url, int depth) {
         try {
             Class.forName(_myDrive);
 
@@ -23,16 +24,15 @@ public class SearchEngineRepository {
             logger.info("Connected to SearchEngineDB");
 
             //the mysql insert statement
-            String query = "INSERT INTO LINKS (LinkText, URL, PrevLinkID, Crawled, Depth)"
-                    + "VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO Websites (LinkText, URL, Crawled, Depth)"
+                    + "VALUES (?, ?, ?, ?)";
 
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query);
             preparedStmt.setString(1, linkText);
             preparedStmt.setString(2, url);
-            preparedStmt.setInt(3, prevLinkID);
-            preparedStmt.setBoolean(4, false); // should be first time inserting link
-            preparedStmt.setInt(5, depth);
+            preparedStmt.setBoolean(3, false); // should be first time inserting link
+            preparedStmt.setInt(4, depth);
 
 
             // execute the preparedstatement
@@ -45,7 +45,7 @@ public class SearchEngineRepository {
         }
     }
 
-    public void UpdateLink(String url) {
+    public void UpdateWebsite(String url) {
         /// update if we have crawled the url before
         try {
             Class.forName(_myDrive);
@@ -54,7 +54,7 @@ public class SearchEngineRepository {
             logger.info("Connected to SearchEngineDB");
 
             //the mysql insert statement
-            String query = "UPDATE LINKS"
+            String query = "UPDATE Websites"
                     + "SET Crawled = TRUE" +
                     "   WHERE URL = ?";
 
@@ -72,7 +72,7 @@ public class SearchEngineRepository {
         }
     }
 
-    public Boolean IsCrawled(String url) {
+    public Boolean CheckIfIsCrawled(String url) {
         // check if url has been crawled
         Boolean isCrawled = false; // it is okay if we have to crawl a url again
         try {
@@ -83,7 +83,7 @@ public class SearchEngineRepository {
 
             //the mysql insert statement
             String query = "SELECT Crawled"
-                    + "FROM Links" +
+                    + "FROM Websites" +
                     "WHERE URL = ?";
 
             // create the mysql insert and add parameters
@@ -91,7 +91,12 @@ public class SearchEngineRepository {
             preparedStmt.setString(1, url);
 
             // execute the preparedstatement
-            Boolean value = preparedStmt.execute();
+            ResultSet rs = preparedStmt.executeQuery();
+
+            // loop through the result set
+            while (rs.next()) {
+                isCrawled = rs.getBoolean("Crawled");
+            }
 
             _globalConnectionString.close();
 
@@ -102,7 +107,33 @@ public class SearchEngineRepository {
         return isCrawled;
     }
 
-    public void InsertSourceCode(String url) {
+    public void SetCrawled(String url) {
+        try {
+            Class.forName(_myDrive);
+
+            Connection _globalConnectionString = DriverManager.getConnection(_myUrl, "root", "");
+            logger.info("Connected to SearchEngineDB");
+
+            //the mysql insert statement
+            String query = "UPDATE Websites"
+                    + "SET Crawled = TRUE" +
+                    " WHERE URL= ?";
+
+            // create the mysql insert and add parameters
+            PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query);
+            preparedStmt.setString(1, url);
+
+            // execute the preparedstatement
+            preparedStmt.execute();
+
+            _globalConnectionString.close();
+
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+        }
+    }
+
+    public void InsertSourceCode(String url, String sourceCode) {
         // insert source code for specified url
 
         try {
@@ -117,13 +148,14 @@ public class SearchEngineRepository {
                     "WHERE LinkID = " +
                     "(" +
                     "   SELECT LinkID" +
-                    "   FROM Links" +
+                    "   FROM Websites" +
                     "   WHERE URL = ?" +
                     ")";
 
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query);
-            preparedStmt.setString(1, url);
+            preparedStmt.setString(1, sourceCode);
+            preparedStmt.setString(2, url);
 
             // execute the preparedstatement
             preparedStmt.execute();
@@ -133,6 +165,44 @@ public class SearchEngineRepository {
         } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
+    }
+
+    public Boolean WebsiteExists(String url) {
+        // check if url has been crawled
+        ArrayList<String> websites = new ArrayList<String>();
+        try {
+            Class.forName(_myDrive);
+
+            Connection _globalConnectionString = DriverManager.getConnection(_myUrl, "root", "");
+            logger.info("Connected to SearchEngineDB");
+
+            //the mysql insert statement
+            String query = "SELECT URL"
+                    + "FROM Websites" +
+                    "WHERE URL = ?";
+
+            // create the mysql insert and add parameters
+            PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query);
+            preparedStmt.setString(1, url);
+
+            // execute the preparedstatement
+            ResultSet rs = preparedStmt.executeQuery();
+
+            // loop through the result set
+            while (rs.next()) {
+                websites.add(rs.getString("URL"));
+            }
+
+            if (websites.size() > 0)
+                return true;
+
+            _globalConnectionString.close();
+
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+        }
+
+        return false;
     }
 
 }
