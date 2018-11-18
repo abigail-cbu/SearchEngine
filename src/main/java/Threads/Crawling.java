@@ -17,6 +17,7 @@ public class Crawling implements Runnable {
     private boolean isDone = false;
     private Website page;
     private StringBuilder sb;
+    private final int MAX_DEPTH = 2;
     public static final Logger logger = LogManager.getLogger(Crawling.class);
 
     public Crawling(Website pWebsite, int pID) {
@@ -36,7 +37,7 @@ public class Crawling implements Runnable {
     }
 
     public void run() {
-        if (page.getDepth() > 1) {
+        if (page.getDepth() > MAX_DEPTH) {
             return;
         }
 
@@ -60,6 +61,8 @@ public class Crawling implements Runnable {
                     w = new Website(l.text(), l.attr("href"), newDepth);
                 }
 
+                logger.info("Checking webiste:" + w.getUrl());
+
                 //page.addToInnerWebsites(w); // todo: we may not need this... -Abby
 
                 // 11/4/2018: saving websites to database
@@ -74,9 +77,7 @@ public class Crawling implements Runnable {
                     logger.info("Insert Website: " + w.getUrl());
                     ser.InsertWebsite(w.getSiteName(), w.getUrl(), w.getDepth());
                     Main.sitesToCrawl.add(w);
-                }
-                else
-                {
+                } else {
                     logger.info("Website Exists: " + w.getUrl());
                 }
             }

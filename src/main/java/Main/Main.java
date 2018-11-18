@@ -70,7 +70,7 @@ public class Main {
                 logger.error(e.getMessage());
             }
 
-            logger.info("sites to crawl" + sitesToCrawl.size() + "    tread ID:" + threadID + "   depth:" + w.getDepth() + "  isCrawled:" + w.getIsCrawled() + "  name" + w.getSiteName() + "  URL " + w.getUrl());
+            logger.info("sites to crawl" + sitesToCrawl.size() + "    thread ID:" + threadID + "   depth:" + w.getDepth() + "  isCrawled:" + w.getIsCrawled() + "  name" + w.getSiteName() + "  URL " + w.getUrl());
         }
 
         logger.info("Finished WebCrawler");
