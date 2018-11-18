@@ -1,24 +1,22 @@
 package Classes;
 
-import org.jsoup.nodes.Element;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Website {
+    private int LinkID;
     private String siteName;
     private String url;
     private int LinkCount;
-    private String bodyText;
+    private String sourceCode;
     private boolean isCrawled;
     private int depth;
     ArrayList<Website> innerWebsites;
 
-    public Website(String pSiteName, String pUrl, int pDepth){
+    public Website(String pSiteName, String pUrl, int pDepth) {
         this.siteName = pSiteName;
         this.url = pUrl;
         LinkCount = 0;
-        isCrawled=false;
+        isCrawled = false;
         depth = pDepth;
         innerWebsites = new ArrayList<Website>();
     }
@@ -30,7 +28,8 @@ public class Website {
     public String getSiteName() {
         return siteName;
     }
-    public String getUrl(){
+
+    public String getUrl() {
         return url;
     }
 
@@ -41,33 +40,40 @@ public class Website {
     public void setUrl(String url) {
         this.url = url;
     }
-    public void linkCountPlusOne(){
+
+    public void linkCountPlusOne() {
         this.LinkCount++;
     }
 
-    public String getBodyText() {
-        return this.bodyText;
+    public String getSourceCode() {
+        return this.sourceCode;
     }
 
-    public void setBodyText(String bodyText) {
-        this.bodyText = bodyText;
+    public void setSourceCode(String sourceCode) {
+        this.sourceCode = sourceCode;
     }
-    public void isCrawled(){
+
+    public void isCrawled() {
         this.isCrawled = true;
     }
-    public boolean getIsCrawled (){
+
+    public boolean getIsCrawled() {
         return this.isCrawled;
     }
-    public void depthPlusOne (){
+
+    public void depthPlusOne() {
         this.depth++;
     }
-    public int getDepth(){
+
+    public int getDepth() {
         return this.depth;
     }
-    public void addToInnerWebsites (Website pWebsite){
+
+    public void addToInnerWebsites(Website pWebsite) {
         this.innerWebsites.add(pWebsite);
     }
-    public ArrayList<Website> getInnerWebsites(){
+
+    public ArrayList<Website> getInnerWebsites() {
         return this.innerWebsites;
     }
 }
