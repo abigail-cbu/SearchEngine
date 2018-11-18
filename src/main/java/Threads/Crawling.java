@@ -36,7 +36,7 @@ public class Crawling implements Runnable {
     }
 
     public void run() {
-        if (page.getDepth() > 0) {
+        if (page.getDepth() > 1) {
             return;
         }
 
