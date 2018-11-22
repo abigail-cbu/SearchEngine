@@ -17,7 +17,7 @@ public class Crawling implements Runnable {
     private boolean isDone = false;
     private Website page;
     private StringBuilder sb;
-    private final int MAX_DEPTH = 2;
+    private final int MAX_DEPTH = 3;
     public static final Logger logger = LogManager.getLogger(Crawling.class);
 
     public Crawling(Website pWebsite, int pID) {
@@ -75,7 +75,8 @@ public class Crawling implements Runnable {
                 // only save unique websites
                 if (!ser.WebsiteExists(w.getUrl())) {
                     logger.info("Insert Website: " + w.getUrl());
-                    ser.InsertWebsite(w.getSiteName(), w.getUrl(), w.getDepth());
+                    int id=ser.InsertWebsite(w.getSiteName(), w.getUrl(), w.getDepth());
+                    w .setLinkID(id);
                     Main.sitesToCrawl.add(w);
                 } else {
                     logger.info("Website Exists: " + w.getUrl());
@@ -84,7 +85,7 @@ public class Crawling implements Runnable {
 
             logger.info("Set Source Code for Website " + page.getUrl());
             page.setSourceCode(doc.body().text());
-            ser.InsertSourceCode(page.getUrl(), doc.body().text());
+            ser.InsertSourceCode(page.getLinkID(), doc.body().text());
 
             logger.info("Set Crawled for Website " + page.getUrl());
             page.isCrawled();

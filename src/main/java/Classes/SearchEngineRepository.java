@@ -13,34 +13,53 @@ public class SearchEngineRepository {
     // MySQL: "jdbc:mysql://hostname:port/databaseName", "username", "password"
     private String dbName = "SearchEngineDB";
     private String dbUserName = "root";
-    private String dbPassword = "";
-    private String _ConnectionString = "jdbc:mysql://localhost/" + dbName + "?user=" + dbUserName + "&password=" + dbPassword + "&useUnicode=true&characterEncoding=UTF-8";
+    private String dbPassword = "1111";
+    private String _ConnectionString = "jdbc:mysql://localhost/" + dbName + "?user=" + dbUserName + "&password=" + dbPassword + "&useUnicode=true&characterEncoding=UTF-8&useSSL=false";
     //private String _ConnectionString = "jdbc:mysql://localhost/SearchEngineDB";
 
     public static final Logger logger = LogManager.getLogger(SearchEngineRepository.class);
 
-    public void InsertWebsite(String siteName, String url, int depth) {
+    public int InsertWebsite(String siteName, String url, int depth) {
         Connection conn = null;
+        int id =-1;
         try {
             logger.info("InsertWebsite for " + siteName);
             Class.forName(_myDrive);
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
+            conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
 
             //the mysql insert statement
             String query = "INSERT INTO Websites (SiteName, URL, Crawled, Depth)"
                     + "VALUES (?, ?, ?, ?)";
 
             // create the mysql insert and add parameters
-            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            PreparedStatement preparedStmt = conn.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);;
             preparedStmt.setString(1, siteName);
             preparedStmt.setString(2, url);
             preparedStmt.setBoolean(3, false); // should be first time inserting link
             preparedStmt.setInt(4, depth);
 
             // execute the preparedstatement
-            preparedStmt.execute();
+           //id = preparedStmt.executeUpdate(Statement.RETURN_GENERATED_KEYS);
+            //preparedStmt.execute();
+
+
+            int affectedRows = preparedStmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating user failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = preparedStmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    id=(int)(generatedKeys.getLong(1));
+                }
+                else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
+            }
 
             conn.close();
+
 
         } catch (Exception ex) {
             logger.error(ex.getMessage());
@@ -50,8 +69,10 @@ public class SearchEngineRepository {
                     conn.close();
                     logger.info("closing connection");
                 }
+                return id;
             } catch (Exception ex) {/*ignore*/}
         }
+        return 0;
     }
 
     public void UpdateWebsite(String url) {
@@ -59,7 +80,7 @@ public class SearchEngineRepository {
         try {
             logger.info("UpdateWebsite for " + url);
             Class.forName(_myDrive);
-            Connection _globalConnectionString = DriverManager.getConnection(_ConnectionString, "root", "");
+            Connection _globalConnectionString = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
 
             //the mysql insert statement
             String query = "UPDATE Websites"
@@ -86,7 +107,7 @@ public class SearchEngineRepository {
         try {
             logger.info("Connected to SearchEngineDB");
             Class.forName(_myDrive);
-            Connection _globalConnectionString = DriverManager.getConnection(_ConnectionString, "root", "");
+            Connection _globalConnectionString = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
 
             //the mysql insert statement
             String query = "SELECT Crawled"
@@ -119,7 +140,7 @@ public class SearchEngineRepository {
         try {
             Class.forName(_myDrive);
 
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
+            conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
             logger.info("Connected to SearchEngineDB");
 
             //the mysql insert statement
@@ -148,16 +169,16 @@ public class SearchEngineRepository {
         }
     }
 
-    public void InsertSourceCode(String url, String sourceCode) {
+    public void InsertSourceCode(int id, String sourceCode) {
         // insert source code for specified url
         Connection conn = null;
         try {
             Class.forName(_myDrive);
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
-            logger.info("InsertSourceCode");
+            conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
+            logger.debug("InsertSourceCode");
 
             //the mysql insert statement
-            String query = "UPDATE SourceCodes" +
+           /* String query = "UPDATE SourceCodes" +
                     " SET SourceCode = ?" +
                     " WHERE LinkID = " +
                     "(" +
@@ -165,11 +186,13 @@ public class SearchEngineRepository {
                     "   FROM Websites" +
                     "   WHERE URL = ?" +
                     ")";
-
+*/
+           String query = "INSERT INTO sourcecodes (LinkID, SourceCode)"
+                   + "VALUES (?, ?)";
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = conn.prepareStatement(query);
-            preparedStmt.setString(1, sourceCode);
-            preparedStmt.setString(2, url);
+            preparedStmt.setInt(1, id);
+            preparedStmt.setString(2, sourceCode);
 
             // execute the preparedstatement
             preparedStmt.execute();
@@ -196,7 +219,7 @@ public class SearchEngineRepository {
             logger.info("WebsiteExists for " + url);
             Class.forName(_myDrive);
             DriverManager.setLoginTimeout(30);
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
+            conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
 
             //the mysql insert statement
             String query = "SELECT URL"
@@ -245,7 +268,7 @@ public class SearchEngineRepository {
             Class.forName(_myDrive);
 
             DriverManager.setLoginTimeout(10);
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
+            conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
 
             String query =
                     "SELECT table_schema SearchEngineDB,"

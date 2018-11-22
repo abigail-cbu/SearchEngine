@@ -3,7 +3,7 @@ package Classes;
 import java.util.ArrayList;
 
 public class Website {
-    private int LinkID;
+    private int linkID;
     private String siteName;
     private String url;
     private int LinkCount;
@@ -19,6 +19,14 @@ public class Website {
         isCrawled = false;
         depth = pDepth;
         innerWebsites = new ArrayList<Website>();
+    }
+
+    public int getLinkID(){
+        return this.linkID;
+    }
+
+    public void setLinkID(int pLinkID){
+        this.linkID = pLinkID;
     }
 
     public int getLinkCount() {
