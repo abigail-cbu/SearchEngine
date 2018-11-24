@@ -22,13 +22,20 @@ public class Main {
     public static final Logger logger = LogManager.getLogger(Main.class);
     public static Queue<Website> sitesToCrawl = new ConcurrentLinkedQueue<Website>();
     public static List<String> urlStrings = new ArrayList<String>();
+    public static boolean switchSeed = false;
 
 
     public static void main(String[] args) throws Exception {
 
         List<Thread> threadList = new ArrayList<Thread>();
+        Queue<Website> seeds = new ConcurrentLinkedQueue<>();
+        seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
+        seeds.add(new Website("CNN", "http://www.cnn.com/", 0));
+        seeds.add(new Website("Wiki", "https://www.wikipedia.org/", 0));
+        seeds.add(new Website("WhiteHouse", "https://www.whitehouse.gov/", 0));
+        seeds.add(new Website("Nasa", "https://www.nasa.gov/", 0));
 
-        Website seedSite = new Website("CalBaptist", "https://calbaptist.edu/", 0);
+        Website seedSite = seeds.remove();
         sitesToCrawl.add(seedSite);
 
         SearchEngineRepository ser = new SearchEngineRepository();
@@ -39,7 +46,8 @@ public class Main {
         logger.info("Starting WebCrawler");
         while (!sitesToCrawl.isEmpty()) {
             threadList.clear();
-            Website w = sitesToCrawl.poll();
+            //Website w = sitesToCrawl.poll();
+            Website w = sitesToCrawl.remove();
             Crawling crawlingThread = new Crawling(w, threadID++);
             Thread thread = new Thread(crawlingThread);
             threadList.add(thread);
@@ -71,6 +79,16 @@ public class Main {
             }
 
             logger.info("sites to crawl" + sitesToCrawl.size() + "    thread ID:" + threadID + "   depth:" + w.getDepth() + "  isCrawled:" + w.getIsCrawled() + "  name" + w.getSiteName() + "  URL " + w.getUrl());
+
+            if(switchSeed){
+                sitesToCrawl.clear();
+                seedSite = seeds.remove();
+                sitesToCrawl.add(seedSite);
+                if (!ser.WebsiteExists(seedSite.getUrl())) {
+                    ser.InsertWebsite(seedSite.getSiteName(), seedSite.getUrl(), 0);
+                }
+                switchSeed = false;
+            }
         }
 
         logger.info("Finished WebCrawler");

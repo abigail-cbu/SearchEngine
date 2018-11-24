@@ -18,6 +18,7 @@ public class Crawling implements Runnable {
     private Website page;
     private StringBuilder sb;
     private final int MAX_DEPTH = 3;
+    private final int MAX_SIZE = 100;
     public static final Logger logger = LogManager.getLogger(Crawling.class);
 
     public Crawling(Website pWebsite, int pID) {
@@ -38,6 +39,7 @@ public class Crawling implements Runnable {
 
     public void run() {
         if (page.getDepth() > MAX_DEPTH) {
+            Main.switchSeed = true;
             return;
         }
 
@@ -46,6 +48,11 @@ public class Crawling implements Runnable {
             final Document doc = Jsoup.connect(page.getUrl()).get();
             String elementUrl; // for urls that are pointing to home page (i.e. /apply == calbaptist.edu/apply)
             SearchEngineRepository ser = new SearchEngineRepository();
+
+            if(ser.GetDBSize()>MAX_SIZE){
+                Main.switchSeed = true;
+                return;
+            }
 
             logger.info("Searching through page for links: " + page.getUrl());
             for (Element l : doc.select("a[href]")) {
