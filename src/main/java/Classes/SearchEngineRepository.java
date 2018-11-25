@@ -157,19 +157,19 @@ public class SearchEngineRepository {
             logger.info("InsertSourceCode");
 
             //the mysql insert statement
-            String query = "UPDATE SourceCodes" +
-                    " SET SourceCode = ?" +
-                    " WHERE LinkID = " +
+            String query = "INSERT INTO SourceCodes" +
+                    " SET LinkID =" +
                     "(" +
                     "   SELECT LinkID" +
                     "   FROM Websites" +
                     "   WHERE URL = ?" +
-                    ")";
+                    ")" +
+                    ",SourceCode = ?";
 
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = conn.prepareStatement(query);
-            preparedStmt.setString(1, sourceCode);
-            preparedStmt.setString(2, url);
+            preparedStmt.setString(1, url);
+            preparedStmt.setString(2, sourceCode);
 
             // execute the preparedstatement
             preparedStmt.execute();
