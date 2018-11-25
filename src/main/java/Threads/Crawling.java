@@ -17,7 +17,7 @@ public class Crawling implements Runnable {
     private boolean isDone = false;
     private Website page;
     private StringBuilder sb;
-    private final int MAX_DEPTH = 3;
+    private final int MAX_DEPTH = 1;
     private final int MAX_SIZE = 100;
     public static final Logger logger = LogManager.getLogger(Crawling.class);
 

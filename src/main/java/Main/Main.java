@@ -78,16 +78,20 @@ public class Main {
                 logger.error(e.getMessage());
             }
 
-            logger.info("sites to crawl" + sitesToCrawl.size() + "    thread ID:" + threadID + "   depth:" + w.getDepth() + "  isCrawled:" + w.getIsCrawled() + "  name" + w.getSiteName() + "  URL " + w.getUrl());
+            logger.info("sites to crawl " + sitesToCrawl.size() + "    thread ID: " + threadID + "   depth: " + w.getDepth() + "  isCrawled: " + w.getIsCrawled() + "  name " + w.getSiteName() + "  URL " + w.getUrl());
 
             if(switchSeed){
                 sitesToCrawl.clear();
-                seedSite = seeds.remove();
-                sitesToCrawl.add(seedSite);
-                if (!ser.WebsiteExists(seedSite.getUrl())) {
-                    ser.InsertWebsite(seedSite.getSiteName(), seedSite.getUrl(), 0);
-                }
                 switchSeed = false;
+            }
+            if(sitesToCrawl.isEmpty()){
+                if(!seeds.isEmpty()) {
+                    seedSite = seeds.remove();
+                    sitesToCrawl.add(seedSite);
+                    if (!ser.WebsiteExists(seedSite.getUrl())) {
+                        ser.InsertWebsite(seedSite.getSiteName(), seedSite.getUrl(), 0);
+                    }
+                }
             }
         }
 
