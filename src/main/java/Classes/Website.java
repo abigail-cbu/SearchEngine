@@ -11,6 +11,7 @@ public class Website {
     private boolean isCrawled;
     private int depth;
     ArrayList<Website> innerWebsites;
+    private int parentLink;
 
     public Website(String pSiteName, String pUrl, int pDepth) {
         this.siteName = pSiteName;
@@ -83,5 +84,13 @@ public class Website {
 
     public ArrayList<Website> getInnerWebsites() {
         return this.innerWebsites;
+    }
+
+    public int getParentLink(){
+        return this.parentLink;
+    }
+
+    public void setParentLink(int pParentLink){
+        this.parentLink = pParentLink;
     }
 }

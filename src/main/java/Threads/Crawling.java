@@ -18,7 +18,7 @@ public class Crawling implements Runnable {
     private Website page;
     private StringBuilder sb;
     private final int MAX_DEPTH = 1;
-    private final int MAX_SIZE = 100;
+
     public static final Logger logger = LogManager.getLogger(Crawling.class);
 
     public Crawling(Website pWebsite, int pID) {
@@ -38,10 +38,7 @@ public class Crawling implements Runnable {
     }
 
     public void run() {
-        if (page.getDepth() > MAX_DEPTH) {
-            Main.switchSeed = true;
-            return;
-        }
+
 
         // saves web page as a doc
         try {
@@ -49,47 +46,47 @@ public class Crawling implements Runnable {
             String elementUrl; // for urls that are pointing to home page (i.e. /apply == calbaptist.edu/apply)
             SearchEngineRepository ser = new SearchEngineRepository();
 
-            if(ser.GetDBSize()>MAX_SIZE){
-                Main.switchSeed = true;
-                return;
-            }
 
             logger.info("Searching through page for links: " + page.getUrl());
-            for (Element l : doc.select("a[href]")) {
-                Website w;
-                page.linkCountPlusOne();
-                int newDepth = page.getDepth() + 1;
+           // logger.debug(doc.body().text());
+            if (page.getDepth() <= MAX_DEPTH-1) {
+                for (Element l : doc.select("a[href]")) {
 
-                if (l.attr("href").startsWith("/")) {
-                    elementUrl = l.attr("href");
-                    elementUrl = page.getUrl() + elementUrl.substring(1);
-                    w = new Website(l.text(), elementUrl, newDepth);
-                } else {
-                    w = new Website(l.text(), l.attr("href"), newDepth);
-                }
+                    Website w;
+                    page.linkCountPlusOne();
+                    int newDepth = page.getDepth() + 1;
 
-                logger.info("Checking webiste:" + w.getUrl());
+                    if (l.attr("href").startsWith("/")) {
+                        elementUrl = l.attr("href");
+                        elementUrl = page.getUrl() + elementUrl.substring(1);
+                        w = new Website(l.text(), elementUrl, newDepth);
+                    } else {
+                        w = new Website(l.text(), l.attr("href"), newDepth);
+                    }
 
-                //page.addToInnerWebsites(w); // todo: we may not need this... -Abby
+                    logger.info("Checking webiste:" + w.getUrl());
 
-                // 11/4/2018: saving websites to database
-//                if (!Main.urlStrings.contains(w.getUrl())) {
-//                    Main.urlStrings.add(w.getUrl());
-//                    Main.sitesToCrawl.add(w);
-//                    // logger.info("   name:"+w.getSiteName()+"   URL"+w.getUrl()+"   depth:"+w.getDepth()+"  isCrawled:"+w.getIsCrawled());
-//                }
+                    //page.addToInnerWebsites(w); // todo: we may not need this... -Abby
 
-                // only save unique websites
-                if (!ser.WebsiteExists(w.getUrl())) {
-                    logger.info("Insert Website: " + w.getUrl());
-                    int id=ser.InsertWebsite(w.getSiteName(), w.getUrl(), w.getDepth());
-                    w .setLinkID(id);
-                    Main.sitesToCrawl.add(w);
-                } else {
-                    logger.info("Website Exists: " + w.getUrl());
+                    // 11/4/2018: saving websites to database
+    //                if (!Main.urlStrings.contains(w.getUrl())) {
+    //                    Main.urlStrings.add(w.getUrl());
+    //                    Main.sitesToCrawl.add(w);
+    //                    // logger.info("   name:"+w.getSiteName()+"   URL"+w.getUrl()+"   depth:"+w.getDepth()+"  isCrawled:"+w.getIsCrawled());
+    //                }
+
+                    // only save unique websites
+                    if (!ser.WebsiteExists(w.getUrl())) {
+                        logger.info("Insert Website: " + w.getUrl());
+                        w.setParentLink(page.getLinkID());
+                        int id=ser.InsertWebsite(w.getSiteName(), w.getUrl(), w.getDepth(),w.getParentLink());
+                        w .setLinkID(id);
+                        Main.sitesToCrawl.add(w);
+                    } else {
+                        logger.info("Website Exists: " + w.getUrl());
+                    }
                 }
             }
-
             logger.info("Set Source Code for Website " + page.getUrl());
             page.setSourceCode(doc.body().text());
             ser.InsertSourceCode(page.getLinkID(), doc.body().text());

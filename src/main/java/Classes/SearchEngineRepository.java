@@ -19,7 +19,7 @@ public class SearchEngineRepository {
 
     public static final Logger logger = LogManager.getLogger(SearchEngineRepository.class);
 
-    public int InsertWebsite(String siteName, String url, int depth) {
+    public int InsertWebsite(String siteName, String url, int depth,int prevLink) {
         Connection conn = null;
         int id =-1;
         try {
@@ -28,8 +28,8 @@ public class SearchEngineRepository {
             conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
 
             //the mysql insert statement
-            String query = "INSERT INTO Websites (SiteName, URL, Crawled, Depth)"
-                    + "VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO Websites (SiteName, URL, Crawled, Depth,PrevLinkID)"
+                    + "VALUES (?, ?, ?, ?, ?)";
 
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = conn.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);;
@@ -37,6 +37,7 @@ public class SearchEngineRepository {
             preparedStmt.setString(2, url);
             preparedStmt.setBoolean(3, false); // should be first time inserting link
             preparedStmt.setInt(4, depth);
+            preparedStmt.setInt(5, prevLink);
 
             // execute the preparedstatement
            //id = preparedStmt.executeUpdate(Statement.RETURN_GENERATED_KEYS);
@@ -58,11 +59,11 @@ public class SearchEngineRepository {
                 }
             }
 
-            conn.close();
+           // conn.close();
 
 
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            logger.error("error in insertion "+url+" "+ex.getMessage());
         } finally {
             try {
                 if (conn != null && !conn.isClosed()) {
@@ -70,8 +71,11 @@ public class SearchEngineRepository {
                     logger.info("closing connection");
                 }
                 return id;
-            } catch (Exception ex) {/*ignore*/}
+            } catch (Exception ex) {
+                logger.error(ex.getMessage());
+            }
         }
+        logger.error("error in insertion "+url);
         return 0;
     }
 
@@ -197,10 +201,9 @@ public class SearchEngineRepository {
             // execute the preparedstatement
             preparedStmt.execute();
 
-            conn.close();
-
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
+//            conn.close();
+         } catch (Exception ex) {
+            logger.error("error in sourceCode insertion "+id+" "+ex.getMessage());
         } finally {
             try {
                 if (conn != null && !conn.isClosed()) {
@@ -270,11 +273,16 @@ public class SearchEngineRepository {
             DriverManager.setLoginTimeout(10);
             conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
 
-            String query =
+           /* String query =
                     "SELECT table_schema SearchEngineDB,"
                             + " ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) \"DB Size in MB\""
                             + " FROM information_schema.tables"
-                            + "GROUP BY table_schema;";
+                            + "GROUP BY table_schema;";*/
+            String query ="SELECT "+
+            "ROUND(SUM(data_length + index_length) / 1024 , 0) "+
+            " FROM information_schema.tables "+
+            " where table_schema = 'searchenginedb'"+
+            " GROUP BY table_schema";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
 
@@ -283,7 +291,7 @@ public class SearchEngineRepository {
 
             // loop through the result set
             while (rs.next()) {
-                size = rs.getInt(0);
+                size = rs.getInt(1);
             }
         } catch (Exception ex) {
             logger.error(ex.getMessage());
