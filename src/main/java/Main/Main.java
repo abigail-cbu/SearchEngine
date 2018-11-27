@@ -24,21 +24,23 @@ public class Main {
     public static List<String> urlStrings = new ArrayList<String>();
     public static boolean switchSeed = false;
     private final static int MAX_SIZE = 3145728;
+    private final static int MAX_THREAD_COUNT = 10;
+    public final static SearchEngineRepository ser = new SearchEngineRepository();
 
 
     public static void main(String[] args) throws Exception {
 
         List<Thread> threadList = new ArrayList<Thread>();
         Queue<Website> seeds = new ConcurrentLinkedQueue<>();
-        seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
+       // seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
         //seeds.add(new Website("CNN", "https://www.cnn.com/", 0));
         //seeds.add(new Website("Wiki", "https://www.wikipedia.org/", 0));
-        //seeds.add(new Website("WhiteHouse", "https://www.whitehouse.gov/", 0));
+        seeds.add(new Website("WhiteHouse", "https://www.whitehouse.gov/", 0));
        // seeds.add(new Website("Nasa", "https://www.nasa.gov/", 0));
 
         Website seedSite = seeds.remove();
 
-        SearchEngineRepository ser = new SearchEngineRepository();
+       // SearchEngineRepository ser = new SearchEngineRepository();
         if (!ser.WebsiteExists(seedSite.getUrl())) {
             int id=ser.InsertWebsite(seedSite.getSiteName(), seedSite.getUrl(), 0,-1);
             seedSite.setLinkID(id);
@@ -54,24 +56,24 @@ public class Main {
             Crawling crawlingThread = new Crawling(w, threadID++);
             Thread thread = new Thread(crawlingThread);
             threadList.add(thread);
-            /*if (sitesToCrawl.size() > 10) {
-                logger.info("Creating more threads");
-                Website[] ww = new Website[100];
-                Crawling[] cc = new Crawling[100];
-                for (int ii = 0; ii < 100; ii++) {
+            if (sitesToCrawl.size() > MAX_THREAD_COUNT) {
+                //logger.info("Creating more threads");
+                Website[] ww = new Website[MAX_THREAD_COUNT];
+                Crawling[] cc = new Crawling[MAX_THREAD_COUNT];
+                for (int ii = 0; ii < MAX_THREAD_COUNT; ii++) {
                     ww[ii] = sitesToCrawl.poll();
                     cc[ii] = new Crawling(ww[ii], threadID++);
                     threadList.add(new Thread(cc[ii]));
                 }
 
-            }*/
+            }
 
             //threads.add(thread);
             for (Thread t : threadList)
                 t.start();
 
             try {
-                logger.info("Joining Threads");
+               // logger.info("Joining Threads");
                 //main thread waits for the other threads to finish
                 for (Thread t : threadList)
                     t.join();
@@ -99,6 +101,7 @@ public class Main {
                 }
             }
         }
+        ser.closeDB();
 
         logger.info("Finished WebCrawler");
     }

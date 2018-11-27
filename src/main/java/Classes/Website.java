@@ -34,6 +34,10 @@ public class Website {
         return LinkCount;
     }
 
+    public void setLinkCount(int pLInkCount){
+        this.LinkCount = pLInkCount;
+    }
+
     public String getSiteName() {
         return siteName;
     }
