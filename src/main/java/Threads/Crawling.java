@@ -17,7 +17,6 @@ public class Crawling implements Runnable {
     private int threadId = 1;
     private boolean isDone = false;
     private Website page;
-    private StringBuilder sb;
     private final int MAX_DEPTH = 1;
 
     // public static final Logger logger = LogManager.getLogger(Crawling.class);
@@ -27,13 +26,6 @@ public class Crawling implements Runnable {
         gui=pGui;
         this.threadId = pID;
         page = pWebsite;
-        sb = new StringBuilder();
-        sb.append("id");
-        sb.append(',');
-        sb.append("Title");
-        sb.append(',');
-        sb.append("Link");
-        sb.append('\n');
     }
 
     public int getId() {
@@ -50,11 +42,8 @@ public class Crawling implements Runnable {
                     .maxBodySize(0)
                     .timeout(12000)
                     .get();
-            String elementUrl; // for urls that are pointing to home page (i.e. /apply == calbaptist.edu/apply)
-            // SearchEngineRepository ser = new SearchEngineRepository();
+            String elementUrl;
 
-            // logger.info("Searching through page for links: " + page.getUrl());
-            // logger.debug(doc.body().text());
             if (page.getDepth() <= MAX_DEPTH-1) {
                 for (Element l : doc.select("a[href]")) {
 
@@ -72,16 +61,7 @@ public class Crawling implements Runnable {
                         w = new Website(l.text(), l.attr("href"), newDepth);
                     }
 
-                    //logger.info("Checking webiste:" + w.getUrl());
 
-                    //page.addToInnerWebsites(w); // todo: we may not need this... -Abby
-
-                    // 11/4/2018: saving websites to database
-                    //                if (!Main.urlStrings.contains(w.getUrl())) {
-                    //                    Main.urlStrings.add(w.getUrl());
-                    //                    Main.sitesToCrawl.add(w);
-                    //                    // logger.info("   name:"+w.getSiteName()+"   URL"+w.getUrl()+"   depth:"+w.getDepth()+"  isCrawled:"+w.getIsCrawled());
-                    //                }
 
                     // only save unique websites
                     if (!Main.ser.WebsiteExists(w.getUrl(),w.getDepth())) {
@@ -91,9 +71,7 @@ public class Crawling implements Runnable {
                         w .setLinkID(id);
                         Main.sitesToCrawl.add(w);
                         page.linkCountPlusOne();
-                    }// else if (!Main.ser.CheckIfIsCrawled(w.getUrl())) {
-                    // Main.sitesToCrawl.add(w);
-                    //}
+                    }
                 }
             }
             //page.setLinkCount(doc.select("a[href]").size());
@@ -110,26 +88,6 @@ public class Crawling implements Runnable {
         } catch (Exception e) {
             gui.error( e.getMessage() + " " + page.getUrl());
         }
-
-    }
-
-    public boolean isDone() {
-        return this.isDone;
-    }
-
-    public void toFile(String pPathName) {
-        try {
-            PrintWriter pw = new PrintWriter(new File(pPathName));
-            pw.write(sb.toString());
-            pw.close();
-        } catch (Exception e) {
-            gui.error(e.getMessage());
-        }
-
-    }
-
-    public Website nextCrawl() {
-        return page;
 
     }
 

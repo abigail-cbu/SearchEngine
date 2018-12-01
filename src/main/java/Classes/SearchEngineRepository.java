@@ -51,10 +51,6 @@ public class SearchEngineRepository {
             preparedStmt.setInt(4, depth);
             preparedStmt.setInt(5, prevLink);
 
-            // execute the preparedstatement
-            //id = preparedStmt.executeUpdate(Statement.RETURN_GENERATED_KEYS);
-            //preparedStmt.execute();
-
 
             int affectedRows = preparedStmt.executeUpdate();
 
@@ -77,18 +73,11 @@ public class SearchEngineRepository {
         } catch (Exception ex) {
             gui.error("error in insertion "+url+" "+ex.getMessage());
         } finally {
-//            try {
-//                if (conn != null && !conn.isClosed()) {
-//                    conn.close();
-//                    logger.info("closing connection");
-//                }
+//
             return id;
-//            } catch (Exception ex) {
-//                gui.error(ex.getMessage());
-//            }
+//
         }
-//        gui.error("error in insertion "+url);
-//        return 0;
+//
     }
 
     public void UpdateWebsite(String url) {
@@ -173,12 +162,8 @@ public class SearchEngineRepository {
     }
 
     public void SetCrawled(String url) {
-        //Connection conn = null;
-        try {
-           /* Class.forName(_myDrive);
 
-            conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
-            logger.info("Connected to SearchEngineDB");*/
+        try {
 
             //the mysql insert statement
             String query = "UPDATE Websites"
@@ -196,24 +181,11 @@ public class SearchEngineRepository {
 
         } catch (Exception ex) {
             gui.error(ex.getMessage());
-        } finally {
-           /* try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    logger.info("closing connection");
-                }
-            } catch (Exception ex) {*//*ignore*//*}*/
         }
     }
     public void SetLinkCount(String url,int count) {
-        //Connection conn = null;
+
         try {
-           /* Class.forName(_myDrive);
-
-            conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
-            logger.info("Connected to SearchEngineDB");*/
-
-            //the mysql insert statement
             String query = "UPDATE Websites"
                     + " SET LinkCount = ?" +
                     " WHERE URL= ?";
@@ -226,7 +198,6 @@ public class SearchEngineRepository {
             // execute the preparedstatement
             preparedStmt.execute();
 
-            // conn.close();
 
         } catch (Exception ex) {
             gui.error(ex.getMessage());
@@ -235,23 +206,9 @@ public class SearchEngineRepository {
     }
 
     public void InsertSourceCode(int id, String sourceCode) {
-        // insert source code for specified url
-        //// Connection conn = null;
-        try {
-            //  Class.forName(_myDrive);
-            //     conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
-            //   logger.debug("InsertSourceCode");
 
-            //the mysql insert statement
-           /* String query = "UPDATE SourceCodes" +
-                    " SET SourceCode = ?" +
-                    " WHERE LinkID = " +
-                    "(" +
-                    "   SELECT LinkID" +
-                    "   FROM Websites" +
-                    "   WHERE URL = ?" +
-                    ")";
-*/
+        try {
+
             String query = "INSERT INTO sourcecodes (LinkID, SourceCode)"
                     + "VALUES (?, ?)";
             // create the mysql insert and add parameters
@@ -262,16 +219,8 @@ public class SearchEngineRepository {
             // execute the preparedstatement
             preparedStmt.execute();
 
-//            conn.close();
         } catch (Exception ex) {
             gui.error("error in sourceCode insertion "+id+" "+ex.getMessage());
-        } finally {
-            /*try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    logger.info("connection close");
-                }
-            } catch (Exception ex) {*//*ignore*//*}*/
         }
     }
 
