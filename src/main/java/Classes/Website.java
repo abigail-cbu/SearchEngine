@@ -21,6 +21,16 @@ public class Website {
         depth = pDepth;
         innerWebsites = new ArrayList<Website>();
     }
+    public Website(String pSiteName, String pUrl, int pDepth,int pPrentLink,int pLinkID) {
+        this.siteName = pSiteName;
+        this.url = pUrl;
+        linkID = pLinkID;
+        parentLink = pPrentLink;
+        LinkCount = 0;
+        isCrawled = false;
+        depth = pDepth;
+        innerWebsites = new ArrayList<Website>();
+    }
 
     public int getLinkID(){
         return this.linkID;
