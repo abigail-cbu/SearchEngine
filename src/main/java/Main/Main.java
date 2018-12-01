@@ -43,9 +43,9 @@ public class Main {
 
         List<Thread> threadList = new ArrayList<Thread>();
         Queue<Website> seeds = new ConcurrentLinkedQueue<>();
-        //seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
-        //seeds.add(new Website("CNN", "https://www.cnn.com/", 0));
-        //seeds.add(new Website("Wiki", "https://www.wikipedia.org/", 0));
+        seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
+        seeds.add(new Website("CNN", "https://www.cnn.com/", 0));
+        seeds.add(new Website("Wiki", "https://www.wikipedia.org/", 0));
         seeds.add(new Website("WhiteHouse", "https://www.whitehouse.gov/", 0));
         //seeds.add(new Website("Nasa", "https://www.nasa.gov/", 0));
 
@@ -90,10 +90,6 @@ public class Main {
 
             gui.info("sites to crawl " + sitesToCrawl.size() + "    thread ID: " + threadID + "   depth: " + w.getDepth() );
 
-           /* if(switchSeed){
-                sitesToCrawl.clear();
-                switchSeed = false;
-            }*/
             getFromSeed(seeds);
 
         }
