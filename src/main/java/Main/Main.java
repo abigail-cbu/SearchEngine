@@ -26,13 +26,14 @@ public class Main {
     public static Queue<Website> sitesToCrawl = new ConcurrentLinkedQueue<Website>();
     private final static int MAX_SIZE = 3145728;
     private final static int MAX_THREAD_COUNT = 10;
-    public final static SearchEngineRepository ser = new SearchEngineRepository();
-
+    public static SearchEngineRepository ser;
+    public static boolean crawlerISRunning = false;
     public GUI gui ;
 
     public Main(GUI pGui)  {
-
+        crawlerISRunning = true;
         gui = pGui;
+        ser = new SearchEngineRepository(gui);
         long startTime = System.currentTimeMillis();
 
 
@@ -42,7 +43,7 @@ public class Main {
 
         List<Thread> threadList = new ArrayList<Thread>();
         Queue<Website> seeds = new ConcurrentLinkedQueue<>();
-        // seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
+        //seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
         //seeds.add(new Website("CNN", "https://www.cnn.com/", 0));
         //seeds.add(new Website("Wiki", "https://www.wikipedia.org/", 0));
         seeds.add(new Website("WhiteHouse", "https://www.whitehouse.gov/", 0));
@@ -53,7 +54,7 @@ public class Main {
 
 
         gui.info("Starting WebCrawler");
-        while (!sitesToCrawl.isEmpty() && ser.GetDBSize()<MAX_SIZE ) {
+        while (!sitesToCrawl.isEmpty() && ser.GetDBSize()<MAX_SIZE && crawlerISRunning) {
             threadList.clear();
             //Website w = sitesToCrawl.poll();
             Website w = sitesToCrawl.remove();
@@ -99,6 +100,8 @@ public class Main {
         ser.closeDB();
 
         gui.info("Finished WebCrawler");
+        gui.btnStart.setText("Start Crawler");
+        crawlerISRunning=false;
         long endTime = System.currentTimeMillis();
         long duration = (endTime - startTime);
         gui.info("Time elapsed: "+(duration/1000) + "s");
@@ -110,7 +113,7 @@ public class Main {
         if(sitesToCrawl.isEmpty()) {
             while (sitesToCrawl.isEmpty() && !seeds.isEmpty()) {
                 Website seedSite = seeds.remove();
-                if (!ser.WebsiteExists(seedSite.getUrl())) {
+                if (!ser.WebsiteExists(seedSite.getUrl(),0)) {
                     int id = ser.InsertWebsite(seedSite.getSiteName(), seedSite.getUrl(), 0, -1);
                     seedSite.setLinkID(id);
                     sitesToCrawl.add(seedSite);

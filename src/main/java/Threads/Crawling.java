@@ -84,7 +84,7 @@ public class Crawling implements Runnable {
                     //                }
 
                     // only save unique websites
-                    if (!Main.ser.WebsiteExists(w.getUrl())) {
+                    if (!Main.ser.WebsiteExists(w.getUrl(),w.getDepth())) {
                         // logger.info("Insert Website: " + w.getUrl());
                         w.setParentLink(page.getLinkID());
                         int id=Main.ser.InsertWebsite(w.getSiteName(), w.getUrl(), w.getDepth(),w.getParentLink());
