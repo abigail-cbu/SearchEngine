@@ -3,7 +3,7 @@ package Classes;
 import java.util.ArrayList;
 
 public class Website {
-    private int LinkID;
+    private int linkID;
     private String siteName;
     private String url;
     private int LinkCount;
@@ -11,6 +11,7 @@ public class Website {
     private boolean isCrawled;
     private int depth;
     ArrayList<Website> innerWebsites;
+    private int parentLink;
 
     public Website(String pSiteName, String pUrl, int pDepth) {
         this.siteName = pSiteName;
@@ -20,9 +21,31 @@ public class Website {
         depth = pDepth;
         innerWebsites = new ArrayList<Website>();
     }
+    public Website(String pSiteName, String pUrl, int pDepth,int pPrentLink,int pLinkID) {
+        this.siteName = pSiteName;
+        this.url = pUrl;
+        linkID = pLinkID;
+        parentLink = pPrentLink;
+        LinkCount = 0;
+        isCrawled = false;
+        depth = pDepth;
+        innerWebsites = new ArrayList<Website>();
+    }
+
+    public int getLinkID(){
+        return this.linkID;
+    }
+
+    public void setLinkID(int pLinkID){
+        this.linkID = pLinkID;
+    }
 
     public int getLinkCount() {
         return LinkCount;
+    }
+
+    public void setLinkCount(int pLInkCount){
+        this.LinkCount = pLInkCount;
     }
 
     public String getSiteName() {
@@ -75,5 +98,13 @@ public class Website {
 
     public ArrayList<Website> getInnerWebsites() {
         return this.innerWebsites;
+    }
+
+    public int getParentLink(){
+        return this.parentLink;
+    }
+
+    public void setParentLink(int pParentLink){
+        this.parentLink = pParentLink;
     }
 }

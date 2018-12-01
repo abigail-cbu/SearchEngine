@@ -1,10 +1,12 @@
 package Classes;
 
+import Layout.GUI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchEngineRepository {
 
@@ -13,53 +15,77 @@ public class SearchEngineRepository {
     // MySQL: "jdbc:mysql://hostname:port/databaseName", "username", "password"
     private String dbName = "SearchEngineDB";
     private String dbUserName = "root";
-    private String dbPassword = "";
-    private String _ConnectionString = "jdbc:mysql://localhost/" + dbName + "?user=" + dbUserName + "&password=" + dbPassword + "&useUnicode=true&characterEncoding=UTF-8";
+    private String dbPassword = "1111";
+    private String _ConnectionString = "jdbc:mysql://localhost/" + dbName + "?user=" + dbUserName + "&password=" + dbPassword + "&useUnicode=true&useSSL=false";
     //private String _ConnectionString = "jdbc:mysql://localhost/SearchEngineDB";
-
-    public static final Logger logger = LogManager.getLogger(SearchEngineRepository.class);
-
-    public void InsertWebsite(String siteName, String url, int depth) {
-        Connection conn = null;
+    Connection conn = null;
+    //public static final Logger logger = LogManager.getLogger(SearchEngineRepository.class);
+    public GUI gui;
+        public SearchEngineRepository(GUI pGUI){
+            gui=pGUI;
         try {
-            logger.info("InsertWebsite for " + siteName);
             Class.forName(_myDrive);
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
+            conn = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public int InsertWebsite(String siteName, String url, int depth,int prevLink) {
+
+        int id =-1;
+        try {
+            //   logger.info("InsertWebsite for " + siteName);
 
             //the mysql insert statement
-            String query = "INSERT INTO Websites (SiteName, URL, Crawled, Depth)"
-                    + "VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO Websites (SiteName, URL, Crawled, Depth,PrevLinkID)"
+                    + "VALUES (?, ?, ?, ?, ?)";
 
             // create the mysql insert and add parameters
-            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            PreparedStatement preparedStmt = conn.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);;
             preparedStmt.setString(1, siteName);
             preparedStmt.setString(2, url);
             preparedStmt.setBoolean(3, false); // should be first time inserting link
             preparedStmt.setInt(4, depth);
+            preparedStmt.setInt(5, prevLink);
 
-            // execute the preparedstatement
-            preparedStmt.execute();
 
-            conn.close();
+            int affectedRows = preparedStmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating user failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = preparedStmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    id=(int)(generatedKeys.getLong(1));
+                }
+                else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
+            }
+
+            // conn.close();
+
 
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            gui.error("error in insertion "+url+" "+ex.getMessage());
         } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    logger.info("closing connection");
-                }
-            } catch (Exception ex) {/*ignore*/}
+//
+            return id;
+//
         }
+//
     }
 
     public void UpdateWebsite(String url) {
         /// update if we have crawled the url before
         try {
-            logger.info("UpdateWebsite for " + url);
+            //  logger.info("UpdateWebsite for " + url);
             Class.forName(_myDrive);
-            Connection _globalConnectionString = DriverManager.getConnection(_ConnectionString, "root", "");
+            Connection _globalConnectionString = DriverManager.getConnection(_ConnectionString, "root", dbPassword);
 
             //the mysql insert statement
             String query = "UPDATE Websites"
@@ -76,7 +102,7 @@ public class SearchEngineRepository {
             _globalConnectionString.close();
 
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            gui.error(ex.getMessage());
         }
     }
 
@@ -84,43 +110,60 @@ public class SearchEngineRepository {
         // check if url has been crawled
         Boolean isCrawled = false; // it is okay if we have to crawl a url again
         try {
-            logger.info("Connected to SearchEngineDB");
-            Class.forName(_myDrive);
-            Connection _globalConnectionString = DriverManager.getConnection(_ConnectionString, "root", "");
 
-            //the mysql insert statement
-            String query = "SELECT Crawled"
-                    + " FROM Websites" +
-                    " WHERE URL = ?";
+            String query ="SELECT Crawled FROM searchenginedb.websites where URL = ?";
 
-            // create the mysql insert and add parameters
-            PreparedStatement preparedStmt = _globalConnectionString.prepareStatement(query);
+//            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
             preparedStmt.setString(1, url);
-
             // execute the preparedstatement
             ResultSet rs = preparedStmt.executeQuery();
 
             // loop through the result set
             while (rs.next()) {
-                isCrawled = rs.getBoolean("Crawled");
+                isCrawled = rs.getBoolean(1);
             }
-
-            _globalConnectionString.close();
-
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            gui.error(ex.getMessage());
+        } finally {
+            try {
+                //   if (conn != null && !conn.isClosed())
+//                    conn.close();
+                //           logger.info("closed connection");
+            } catch (Exception ex) {
+                /*ignore*/
+            }
         }
 
         return isCrawled;
     }
 
-    public void SetCrawled(String url) {
-        Connection conn = null;
+    public List<Website> ReadNotCrawled() {
+        List<Website> l = new ArrayList<>();
         try {
-            Class.forName(_myDrive);
 
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
-            logger.info("Connected to SearchEngineDB");
+            String query ="SELECT LinkID,SiteName,URL,LinkCount,PrevLinkID,Crawled,Depth FROM searchenginedb.websites where Crawled = 0;";
+
+
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            // execute the preparedstatement
+            ResultSet rs = preparedStmt.executeQuery();
+
+            // loop through the result set
+            while (rs.next()) {
+                l.add(new Website(rs.getString("SiteName"),rs.getString("URL"),rs.getInt("Depth"),rs.getInt("PrevLinkID"),rs.getInt("LinkID")));
+
+            }
+        } catch (Exception ex) {
+            gui.error(ex.getMessage());
+        }
+
+        return l;
+    }
+
+    public void SetCrawled(String url) {
+
+        try {
 
             //the mysql insert statement
             String query = "UPDATE Websites"
@@ -134,146 +177,133 @@ public class SearchEngineRepository {
             // execute the preparedstatement
             preparedStmt.execute();
 
-            conn.close();
+            // conn.close();
 
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    logger.info("closing connection");
-                }
-            } catch (Exception ex) {/*ignore*/}
+            gui.error(ex.getMessage());
         }
     }
+    public void SetLinkCount(String url,int count) {
 
-    public void InsertSourceCode(String url, String sourceCode) {
-        // insert source code for specified url
-        Connection conn = null;
         try {
-            Class.forName(_myDrive);
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
-            logger.info("InsertSourceCode");
-
-            //the mysql insert statement
-            String query = "UPDATE SourceCodes" +
-                    " SET SourceCode = ?" +
-                    " WHERE LinkID = " +
-                    "(" +
-                    "   SELECT LinkID" +
-                    "   FROM Websites" +
-                    "   WHERE URL = ?" +
-                    ")";
+            String query = "UPDATE Websites"
+                    + " SET LinkCount = ?" +
+                    " WHERE URL= ?";
 
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = conn.prepareStatement(query);
-            preparedStmt.setString(1, sourceCode);
+            preparedStmt.setInt(1, count);
             preparedStmt.setString(2, url);
 
             // execute the preparedstatement
             preparedStmt.execute();
 
-            conn.close();
 
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    logger.info("connection close");
-                }
-            } catch (Exception ex) {/*ignore*/}
+            gui.error(ex.getMessage());
+
         }
     }
 
-    public Boolean WebsiteExists(String url) {
-        // check if url has been crawled
-        ArrayList<String> websites = new ArrayList<String>();
-        Connection conn = null;
+    public void InsertSourceCode(int id, String sourceCode) {
+
         try {
-            logger.info("WebsiteExists for " + url);
-            Class.forName(_myDrive);
-            DriverManager.setLoginTimeout(30);
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
 
-            //the mysql insert statement
-            String query = "SELECT URL"
-                    + " FROM Websites " +
-                    "WHERE URL = ?";
-
-            logger.info("executing WebsiteExists query");
+            String query = "INSERT INTO sourcecodes (LinkID, SourceCode)"
+                    + "VALUES (?, ?)";
             // create the mysql insert and add parameters
             PreparedStatement preparedStmt = conn.prepareStatement(query);
-            preparedStmt.setString(1, url);
+            preparedStmt.setInt(1, id);
+            preparedStmt.setString(2, sourceCode);
 
-            logger.info("getting results");
             // execute the preparedstatement
+            preparedStmt.execute();
+
+        } catch (Exception ex) {
+            gui.error("error in sourceCode insertion "+id+" "+ex.getMessage());
+        }
+    }
+
+    public Boolean WebsiteExists(String url,int pDepth) {
+        // check if url has been crawled
+        ArrayList<String> websites = new ArrayList<String>();
+
+        try {
+
+            String query = "SELECT URL"
+                        + " FROM Websites " +
+                        "WHERE Depth <=? and URL = ?";
+            
+
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, pDepth);
+            preparedStmt.setString(2, url);
+
             ResultSet rs = preparedStmt.executeQuery();
 
-            // loop through the result set
+
             while (rs.next()) {
                 websites.add(rs.getString("URL"));
             }
-
-            logger.info("websites found " + websites.size());
-            conn.close();
 
             if (websites.size() > 0)
                 return true;
 
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    logger.info("closed connection");
-                }
-            } catch (Exception ex) { /*ignore*/}
+            gui.error(ex.getMessage());
         }
 
         return false;
     }
 
     public int GetDBSize() {
-        Connection conn = null;
         int size = 0;
         try {
-            logger.info("GetDBSize");
-            Class.forName(_myDrive);
-
-            DriverManager.setLoginTimeout(10);
-            conn = DriverManager.getConnection(_ConnectionString, "root", "");
-
-            String query =
-                    "SELECT table_schema SearchEngineDB,"
-                            + " ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) \"DB Size in MB\""
-                            + " FROM information_schema.tables"
-                            + "GROUP BY table_schema;";
+            String query ="SELECT "+
+                    "ROUND(SUM(data_length + index_length) / 1024 , 0) "+
+                    " FROM information_schema.tables "+
+                    " where table_schema = 'searchenginedb'"+
+                    " GROUP BY table_schema";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
 
-            // execute the preparedstatement
             ResultSet rs = preparedStmt.executeQuery();
 
-            // loop through the result set
             while (rs.next()) {
-                size = rs.getInt(0);
+                size = rs.getInt(1);
             }
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed())
-                    conn.close();
-                logger.info("closed connection");
-            } catch (Exception ex) {
-                /*ignore*/
-            }
+            gui.error(ex.getMessage());
         }
 
         return size;
+    }
+    public void closeDB(){
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                gui.info("closed connection");
+            }
+        } catch (Exception ex) {
+            /*ignore*/
+        }
+    }
+
+    public void getSummary(){
+            String summary = "";
+        try {
+            String query ="SELECT count(*) FROM searchenginedb.websites";
+
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            ResultSet rs = preparedStmt.executeQuery();
+
+            while (rs.next()) {
+                summary+= "Number of unique domains crawled: "+  rs.getInt(1);
+            }
+        } catch (Exception ex) {
+            gui.error(ex.getMessage());
+        }
+
     }
 }
