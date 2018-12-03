@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+//this is the main class
 public class Main {
     private static List<Thread> threads = new ArrayList<Thread>();
     private static int threadID = 1;
