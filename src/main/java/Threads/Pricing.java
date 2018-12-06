@@ -26,7 +26,7 @@ public class Pricing
 
     }
 
-    public static void crawl(Product p, GUI gui) {
+    public void crawl(Product p, GUI gui) {
         if (p.getURL().equals(""))
         {
             return;
@@ -76,5 +76,9 @@ public class Pricing
         {
             gui.errorProductPricing( "Pricing - " + e.getMessage() + " ");
         }
+    }
+
+    public void timerStop(){
+        timer.cancel();
     }
 }
