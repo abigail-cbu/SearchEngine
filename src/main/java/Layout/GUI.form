@@ -523,7 +523,7 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <text value="24*60*60"/>
+                  <text value="86400"/>
                 </properties>
               </component>
               <component id="6da64" class="javax.swing.JLabel">

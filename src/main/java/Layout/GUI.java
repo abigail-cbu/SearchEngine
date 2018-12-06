@@ -234,13 +234,12 @@ public class GUI {
         return Integer.parseInt(maxNumberOfThreadsTextField.getText());
     }
 
-    public long getRepetitionCycle(){
-        long a = 60*60*24;
-        if(repetitionTextField.getText().length()>0) {
+    public long getRepetitionCycle() {
+        long a = 60 * 60 * 24;
+        if (repetitionTextField.getText().length() > 0) {
             try {
                 a = Long.parseLong(repetitionTextField.getText());
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 errorProductPricing(e.getMessage());
             }
         }
@@ -315,7 +314,7 @@ public class GUI {
         clearTextButton1.setText("Clear Text");
         panel2.add(clearTextButton1, new GridConstraints(0, 5, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(13, 6, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(15, 6, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Setting", panel3);
         final JLabel label3 = new JLabel();
         label3.setText("Data Base Settings:");
@@ -323,7 +322,7 @@ public class GUI {
         final Spacer spacer1 = new Spacer();
         panel3.add(spacer1, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        panel3.add(spacer2, new GridConstraints(12, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel3.add(spacer2, new GridConstraints(14, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("Address: ");
         panel3.add(label4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -432,6 +431,18 @@ public class GUI {
         maxNumberOfThreadsTextField = new JTextField();
         maxNumberOfThreadsTextField.setText("10");
         panel3.add(maxNumberOfThreadsTextField, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label25 = new JLabel();
+        label25.setText("Product Pricing Settings:");
+        panel3.add(label25, new GridConstraints(12, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label26 = new JLabel();
+        label26.setText("Schedule Repetition:");
+        panel3.add(label26, new GridConstraints(13, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        repetitionTextField = new JTextField();
+        repetitionTextField.setText("86400");
+        panel3.add(repetitionTextField, new GridConstraints(13, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label27 = new JLabel();
+        label27.setText("Seconds");
+        panel3.add(label27, new GridConstraints(13, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
