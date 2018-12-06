@@ -22,7 +22,7 @@ public class Pricing
             public void run() {
                 crawlPrice();
             }
-        },0, 24*60*60*1000);
+        },0, gui.getRepetitionCycle()*1000);
 
     }
 

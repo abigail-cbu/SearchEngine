@@ -50,6 +50,7 @@ public class GUI {
     private JTextField dataLimitTextField;
     private JTextField crawlDepthTextField;
     private JTextField maxNumberOfThreadsTextField;
+    private JTextField repetitionTextField;
     public static SearchEngineRepository ser;
 
 
@@ -231,6 +232,19 @@ public class GUI {
 
     public int getMaxNumOfThreads() {
         return Integer.parseInt(maxNumberOfThreadsTextField.getText());
+    }
+
+    public long getRepetitionCycle(){
+        long a = 60*60*24;
+        if(repetitionTextField.getText().length()>0) {
+            try {
+                a = Long.parseLong(repetitionTextField.getText());
+            }catch (Exception e)
+            {
+                errorProductPricing(e.getMessage());
+            }
+        }
+        return a;
     }
 
     {
