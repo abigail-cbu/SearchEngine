@@ -1,18 +1,8 @@
 package Main;
 
-import Classes.SearchEngineRepository;
 import Classes.Website;
 import Layout.GUI;
 import Threads.Crawling;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
-import java.awt.*;
-import java.io.File;
-import java.io.PrintWriter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,29 +14,32 @@ public class Main {
     private static int threadID = 1;
     //public static final Logger logger = LogManager.getLogger(Main.class);
     public static Queue<Website> sitesToCrawl = new ConcurrentLinkedQueue<Website>();
-    private final static int MAX_SIZE = 3145728;
-    private final static int MAX_THREAD_COUNT = 10;
-    public static SearchEngineRepository ser;
+    private static int MAX_SIZE = 3145728;
+    private static int MAX_THREAD_COUNT = 10;
     public static boolean crawlerISRunning = false;
     public GUI gui ;
 
     public Main(GUI pGui)  {
         crawlerISRunning = true;
         gui = pGui;
-        ser = new SearchEngineRepository(gui);
+        /*gui.ser = new SearchEngineRepository(gui);*/
         long startTime = System.currentTimeMillis();
-
-
-        List<Website> NotCrawleds = ser.ReadNotCrawled();
+        MAX_SIZE = gui.getMaxSize();
+        MAX_THREAD_COUNT = gui.getMaxNumOfThreads();
+        List<Website> NotCrawleds = gui.ser.ReadNotCrawled();
         for(Website w:NotCrawleds)
             sitesToCrawl.add(w);
 
         List<Thread> threadList = new ArrayList<Thread>();
         Queue<Website> seeds = new ConcurrentLinkedQueue<>();
-        seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
-        seeds.add(new Website("CNN", "https://www.cnn.com/", 0));
-        seeds.add(new Website("Wiki", "https://www.wikipedia.org/", 0));
-        seeds.add(new Website("WhiteHouse", "https://www.whitehouse.gov/", 0));
+        ArrayList<Website> seedsFromGUI = (ArrayList<Website>) gui.getSeeds().clone();
+        for(Website w : seedsFromGUI){
+            seeds.add(w);
+        }
+        //seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
+        //seeds.add(new Website("CNN", "https://www.cnn.com/", 0));
+        //seeds.add(new Website("Wiki", "https://www.wikipedia.org/", 0));
+       // seeds.add(new Website("WhiteHouse", "https://www.whitehouse.gov/", 0));
         //seeds.add(new Website("Nasa", "https://www.nasa.gov/", 0));
 
 
@@ -54,7 +47,7 @@ public class Main {
 
 
         gui.info("Starting WebCrawler");
-        while (!sitesToCrawl.isEmpty() && ser.GetDBSize()<MAX_SIZE && crawlerISRunning) {
+        while (!sitesToCrawl.isEmpty() && gui.ser.getDBSize()<MAX_SIZE && crawlerISRunning) {
             threadList.clear();
             //Website w = sitesToCrawl.poll();
             Website w = sitesToCrawl.remove();
@@ -90,10 +83,11 @@ public class Main {
 
             gui.info("sites to crawl " + sitesToCrawl.size() + "    thread ID: " + threadID + "   depth: " + w.getDepth() );
 
+
             getFromSeed(seeds);
 
         }
-        ser.closeDB();
+        //gui.ser.closeDB();
 
         gui.info("Finished WebCrawler");
         gui.btnStart.setText("Start Crawler");
@@ -109,9 +103,10 @@ public class Main {
         if(sitesToCrawl.isEmpty()) {
             while (sitesToCrawl.isEmpty() && !seeds.isEmpty()) {
                 Website seedSite = seeds.remove();
-                if (!ser.WebsiteExists(seedSite.getUrl(),0)) {
-                    int id = ser.InsertWebsite(seedSite.getSiteName(), seedSite.getUrl(), 0, -1);
+                if (!gui.ser.WebsiteExists(seedSite.getUrl(),0)) {
+                    int id = gui.ser.InsertWebsite(seedSite.getSiteName(), seedSite.getUrl(), 0, -1,-1);
                     seedSite.setLinkID(id);
+                    seedSite.setParentID(id);
                     sitesToCrawl.add(seedSite);
                     gui.info("New Seed Added: " + seedSite.getUrl());
                 }

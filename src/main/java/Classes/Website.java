@@ -1,35 +1,84 @@
 package Classes;
 
-import java.util.ArrayList;
-
 public class Website {
     private int linkID;
     private String siteName;
     private String url;
-    private int LinkCount;
+    private int linkCount;
     private String sourceCode;
     private boolean isCrawled;
     private int depth;
-    ArrayList<Website> innerWebsites;
-    private int parentLink;
+    private int prevID;
+    private int parentID;
 
-    public Website(String pSiteName, String pUrl, int pDepth) {
-        this.siteName = pSiteName;
-        this.url = pUrl;
-        LinkCount = 0;
-        isCrawled = false;
-        depth = pDepth;
-        innerWebsites = new ArrayList<Website>();
+
+    public static class Builder {
+        private int linkID;
+        private String siteName;
+        private String url;
+        private int linkCount;
+        private String sourceCode;
+        private boolean isCrawled;
+        private int depth;
+        private int prevID;
+        private int parentID;
+
+        public Website.Builder withLinkID(int ID) {
+            this.linkID = ID;
+            return this;
+        }
+        public Website.Builder withSiteName(String siteName){
+            this.siteName = siteName;
+            return this;
+        }
+        public Website.Builder withURL(String url){
+            this.url = url;
+            return this;
+        }
+        public Website.Builder withLinkCount(int linkCount){
+            this.linkCount = linkCount;
+            return this;
+        }
+        public Website.Builder withIsCrawled(boolean isCrawled){
+            this.isCrawled = isCrawled;
+            return this;
+        }
+        public Website.Builder withDepth(int depth){
+            this.depth = depth;
+            return this;
+        }
+        public Website.Builder withPrevID(int prevID){
+            this.prevID = prevID;
+            return this;
+        }
+        public Website.Builder withParentID(int parentID){
+            this.parentID = parentID;
+            return this;
+        }
+        public Website.Builder withSourceCode(String sourceCode){
+            this.sourceCode = sourceCode;
+            return this;
+        }
+
+
+        public Website build(){
+            //Here we create the actual bank account object, which is always in a fully initialised state when it's returned.
+            Website website = new Website();  //Since the builder is in the BankAccount class, we can invoke its private constructor.
+            website.linkID = this.linkID;
+            website.prevID = this.prevID;
+            website.parentID = this.parentID;
+            website.isCrawled = this.isCrawled;
+            website.siteName = this.siteName;
+            website.sourceCode = this.sourceCode;
+            website.depth = this.depth;
+            website.url = this.url;
+            website.linkCount = this.linkCount;
+            return website;
+        }
     }
-    public Website(String pSiteName, String pUrl, int pDepth,int pPrentLink,int pLinkID) {
-        this.siteName = pSiteName;
-        this.url = pUrl;
-        linkID = pLinkID;
-        parentLink = pPrentLink;
-        LinkCount = 0;
-        isCrawled = false;
-        depth = pDepth;
-        innerWebsites = new ArrayList<Website>();
+
+    private Website() {
+
     }
 
     public int getLinkID(){
@@ -41,11 +90,11 @@ public class Website {
     }
 
     public int getLinkCount() {
-        return LinkCount;
+        return linkCount;
     }
 
     public void setLinkCount(int pLInkCount){
-        this.LinkCount = pLInkCount;
+        this.linkCount = pLInkCount;
     }
 
     public String getSiteName() {
@@ -65,7 +114,7 @@ public class Website {
     }
 
     public void linkCountPlusOne() {
-        this.LinkCount++;
+        this.linkCount++;
     }
 
     public String getSourceCode() {
@@ -80,31 +129,22 @@ public class Website {
         this.isCrawled = true;
     }
 
-    public boolean getIsCrawled() {
-        return this.isCrawled;
-    }
-
-    public void depthPlusOne() {
-        this.depth++;
-    }
-
     public int getDepth() {
         return this.depth;
     }
 
-    public void addToInnerWebsites(Website pWebsite) {
-        this.innerWebsites.add(pWebsite);
+    public int getParentID(){
+        return this.parentID;
     }
 
-    public ArrayList<Website> getInnerWebsites() {
-        return this.innerWebsites;
+    public void setParentID(int pParentLink){
+        this.parentID = pParentLink;
     }
 
-    public int getParentLink(){
-        return this.parentLink;
+    public int getPrevID(){
+        return this.prevID;
     }
-
-    public void setParentLink(int pParentLink){
-        this.parentLink = pParentLink;
+    public  void setPrevID(int pPrevID){
+        this.prevID = pPrevID;
     }
 }
