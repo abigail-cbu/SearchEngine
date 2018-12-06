@@ -17,13 +17,14 @@ public class Crawling implements Runnable {
     private int threadId = 1;
     private boolean isDone = false;
     private Website page;
-    private final int MAX_DEPTH = 1;
+    private int MAX_DEPTH = 1;
 
     // public static final Logger logger = LogManager.getLogger(Crawling.class);
     public GUI gui ;
 
     public Crawling(Website pWebsite, int pID, GUI pGui) {
         gui=pGui;
+        MAX_DEPTH = gui.getMaxDepth();
         this.threadId = pID;
         page = pWebsite;
     }
@@ -38,7 +39,7 @@ public class Crawling implements Runnable {
         // saves web page as a doc
         try {
             final Document doc = Jsoup.connect(page.getUrl()).header("Accept-Encoding", "gzip, deflate")
-                    //.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
                     .maxBodySize(0)
                     .timeout(12000)
                     .get();
@@ -52,22 +53,23 @@ public class Crawling implements Runnable {
                     int newDepth = page.getDepth() + 1;
 
                     if (l.attr("href").startsWith("//")) {
-                        w = new Website(l.text(), "http:"+ l.attr("href"), newDepth);
+                        w = new Website.Builder().withSiteName(l.text()).withURL("http:"+ l.attr("href")).withDepth(newDepth).build();
                     } else if (l.attr("href").startsWith("/")) {
                         elementUrl = l.attr("href");
                         elementUrl = page.getUrl() + elementUrl.substring(1);
-                        w = new Website(l.text(), elementUrl, newDepth);
+                        w = new Website.Builder().withSiteName(l.text()).withURL(elementUrl).withDepth(newDepth).build();
                     } else {
-                        w = new Website(l.text(), l.attr("href"), newDepth);
+                        w = new Website.Builder().withSiteName(l.text()).withURL(l.attr("href")).withDepth(newDepth).build();
                     }
 
 
 
                     // only save unique websites
-                    if (!Main.ser.WebsiteExists(w.getUrl(),w.getDepth())) {
+                    if (!gui.ser.WebsiteExists(w.getUrl(),w.getDepth())) {
                         // logger.info("Insert Website: " + w.getUrl());
-                        w.setParentLink(page.getLinkID());
-                        int id=Main.ser.InsertWebsite(w.getSiteName(), w.getUrl(), w.getDepth(),w.getParentLink());
+                        w.setPrevID(page.getLinkID());
+                        w.setParentID(page.getParentID());
+                        int id=gui.ser.InsertWebsite(w.getSiteName(), w.getUrl(), w.getDepth(),w.getPrevID(),w.getParentID());
                         w .setLinkID(id);
                         Main.sitesToCrawl.add(w);
                         page.linkCountPlusOne();
@@ -75,15 +77,15 @@ public class Crawling implements Runnable {
                 }
             }
             //page.setLinkCount(doc.select("a[href]").size());
-            Main.ser.SetLinkCount(page.getUrl(),page.getLinkCount());
+            gui.ser.SetLinkCount(page.getUrl(),page.getLinkCount());
 
             // logger.info("Set Source Code for Website " + page.getUrl());
             page.setSourceCode(doc.body().text());
-            Main.ser.InsertSourceCode(page.getLinkID(), doc.body().text());
+            gui.ser.InsertSourceCode(page.getLinkID(), doc.body().text());
 
             //logger.info("Set Crawled for Website " + page.getUrl());
             page.isCrawled();
-            Main.ser.SetCrawled(page.getUrl());
+            gui.ser.SetCrawled(page.getUrl());
 
         } catch (Exception e) {
             gui.error( e.getMessage() + " " + page.getUrl());
