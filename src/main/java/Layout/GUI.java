@@ -4,7 +4,7 @@ import Classes.Product;
 import Classes.SearchEngineRepository;
 import Classes.Website;
 import Main.Main;
-//import Threads.Pricing;
+import Threads.Pricing;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -50,12 +50,13 @@ public class GUI {
     private JTextField dataLimitTextField;
     private JTextField crawlDepthTextField;
     private JTextField maxNumberOfThreadsTextField;
+    private JTextField repetitionTextField;
     public static SearchEngineRepository ser;
 
 
     public GUI() {
         ser = new SearchEngineRepository(this);
-     //   new Pricing(this);
+        new Pricing(this);
         fillComboBox();
         txtLog.setLineWrap(true);
         txtLog.setWrapStyleWord(true);
@@ -91,7 +92,7 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
                 new Thread() {
                     public void run() {
-                      //  Pricing.crawl(new Product.Builder().withURL(httpsWwwAmazonComTextField.getText()).build(), GUI.this);
+                        Pricing.crawl(new Product.Builder().withURL(httpsWwwAmazonComTextField.getText()).build(), GUI.this);
                         fillComboBox();
                         clearProductSearchText();
                     }
@@ -231,6 +232,19 @@ public class GUI {
 
     public int getMaxNumOfThreads() {
         return Integer.parseInt(maxNumberOfThreadsTextField.getText());
+    }
+
+    public long getRepetitionCycle(){
+        long a = 60*60*24;
+        if(repetitionTextField.getText().length()>0) {
+            try {
+                a = Long.parseLong(repetitionTextField.getText());
+            }catch (Exception e)
+            {
+                errorProductPricing(e.getMessage());
+            }
+        }
+        return a;
     }
 
     {
