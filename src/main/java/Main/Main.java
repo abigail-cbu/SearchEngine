@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Main {
     private static int threadID = 1;
-    //public static final Logger logger = LogManager.getLogger(Main.class);
     public static Queue<Website> sitesToCrawl = new ConcurrentLinkedQueue<Website>();
     private static int MAX_SIZE = 3145728;
     private static int MAX_THREAD_COUNT = 10;
@@ -22,40 +21,28 @@ public class Main {
     public Main(GUI pGui)  {
         crawlerISRunning = true;
         gui = pGui;
-        /*gui.ser = new SearchEngineRepository(gui);*/
         long startTime = System.currentTimeMillis();
         MAX_SIZE = gui.getMaxSize();
         MAX_THREAD_COUNT = gui.getMaxNumOfThreads();
         List<Website> NotCrawleds = gui.ser.ReadNotCrawled();
-        for(Website w:NotCrawleds)
+        for(Website w:NotCrawleds) {
             sitesToCrawl.add(w);
-
+        }
         List<Thread> threadList = new ArrayList<Thread>();
         Queue<Website> seeds = new ConcurrentLinkedQueue<>();
         ArrayList<Website> seedsFromGUI = (ArrayList<Website>) gui.getSeeds().clone();
         for(Website w : seedsFromGUI){
             seeds.add(w);
         }
-        //seeds.add(new Website("CalBaptist", "https://calbaptist.edu/", 0));
-        //seeds.add(new Website("CNN", "https://www.cnn.com/", 0));
-        //seeds.add(new Website("Wiki", "https://www.wikipedia.org/", 0));
-       // seeds.add(new Website("WhiteHouse", "https://www.whitehouse.gov/", 0));
-        //seeds.add(new Website("Nasa", "https://www.nasa.gov/", 0));
-
-
         getFromSeed(seeds);
-
-
         gui.info("Starting WebCrawler");
         while (!sitesToCrawl.isEmpty() && gui.ser.getDBSize()<MAX_SIZE && crawlerISRunning) {
             threadList.clear();
-            //Website w = sitesToCrawl.poll();
             Website w = sitesToCrawl.remove();
             Crawling crawlingThread = new Crawling(w, threadID++,gui);
             Thread thread = new Thread(crawlingThread);
             threadList.add(thread);
             if (sitesToCrawl.size() > MAX_THREAD_COUNT) {
-                //logger.info("Creating more threads");
                 Website[] ww = new Website[MAX_THREAD_COUNT];
                 Crawling[] cc = new Crawling[MAX_THREAD_COUNT];
                 for (int ii = 0; ii < MAX_THREAD_COUNT; ii++) {
@@ -65,29 +52,22 @@ public class Main {
                 }
 
             }
-
-            //threads.add(thread);
-            for (Thread t : threadList)
+            for (Thread t : threadList) {
                 t.start();
-
+            }
             try {
                 // logger.info("Joining Threads");
                 //main thread waits for the other threads to finish
-                for (Thread t : threadList)
+                for (Thread t : threadList) {
                     t.join();
-
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 gui.error(e.getMessage());
             }
-
             gui.info("sites to crawl " + sitesToCrawl.size() + "    thread ID: " + threadID + "   depth: " + w.getDepth() );
-
-
             getFromSeed(seeds);
-
         }
-        //gui.ser.closeDB();
 
         gui.info("Finished WebCrawler");
         gui.btnStart.setText("Start Crawler");
@@ -95,8 +75,6 @@ public class Main {
         long endTime = System.currentTimeMillis();
         long duration = (endTime - startTime);
         gui.info("Time elapsed: "+(duration/1000) + "s");
-
-
     }
 
     private void getFromSeed(Queue<Website> seeds) {

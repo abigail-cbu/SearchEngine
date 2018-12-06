@@ -62,8 +62,7 @@ public class Website {
 
 
         public Website build(){
-            //Here we create the actual bank account object, which is always in a fully initialised state when it's returned.
-            Website website = new Website();  //Since the builder is in the BankAccount class, we can invoke its private constructor.
+            Website website = new Website();
             website.linkID = this.linkID;
             website.prevID = this.prevID;
             website.parentID = this.parentID;
