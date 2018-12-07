@@ -145,14 +145,10 @@ public class GUI {
         }
         _panel.doLayout();
     }
-
     public void info(String msg) {
-
-
         String timeStamp = new SimpleDateFormat("MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
         txtLog.append("INFO - " + timeStamp + " - " + msg + "\n");
         _panel.doLayout();
-
     }
 
     public void error(String msg) {
@@ -173,7 +169,6 @@ public class GUI {
     }
 
     public static void main(String[] args) {
-
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 //Create and set up the window.

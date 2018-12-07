@@ -42,7 +42,7 @@ public class Product {
         }
         public Builder withURL(String URL){
             this.URL = URL;
-            return this;  //By returning the builder each time, we can create a fluent interface.
+            return this;
         }
         public Builder withDateTime(String dateTime){
             this.date_time = dateTime;
@@ -58,8 +58,7 @@ public class Product {
         }
 
         public Product build(){
-            //Here we create the actual bank account object, which is always in a fully initialised state when it's returned.
-            Product product = new Product();  //Since the builder is in the BankAccount class, we can invoke its private constructor.
+            Product product = new Product();
             product.ID = this.ID;
             product.price = this.price;
             product.productName = this.productName;
